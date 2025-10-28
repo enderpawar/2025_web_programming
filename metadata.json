@@ -1,0 +1,5 @@
+{
+  "name": "JS Online Compiler",
+  "description": "A sleek and efficient in-browser JavaScript compiler. Write your JS code in the editor, click run, and see the output, including console logs and errors, displayed instantly. Perfect for quick tests, learning, and debugging snippets.",
+  "requestFramePermissions": []
+}
