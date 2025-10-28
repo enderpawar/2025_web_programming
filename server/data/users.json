@@ -19,5 +19,12 @@
     "name": "asdfasdf",
     "passwordHash": "$2a$10$wIIUicLzYbHgmModtX.3S.WIZP6zu86izqwcy/KUqCo3QFFiAe1wq",
     "createdAt": 1761619641472
+  },
+  {
+    "id": "3ba923ca-789c-4140-919c-445d1822cc5a",
+    "email": "1234@1",
+    "name": "이진우",
+    "passwordHash": "$2a$10$SbpZ2KCe8B3JZDCI8Xsoe.OGBZY2UTbrRaTqUG/eIwuGJ6HloWP2C",
+    "createdAt": 1761620368792
   }
 ]

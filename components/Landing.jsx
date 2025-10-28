@@ -28,9 +28,7 @@ const Landing = () => {
       <main className="flex-1">
         <section className="max-w-4xl mx-auto px-4 pt-20 md:pt-28 text-center">
           <div className="w-8 mx-auto border-t-2 border-white/50 mb-8" />
-          <h1 className="text-2xl md:text-3xl font-semibold text-white/90">
-            Stop wasting time producing a report.
-          </h1>
+          <TypingTitle />
           <p className="mt-3 text-white/70">
             We give you an instant IDE to learn and study group.
           </p>
@@ -124,5 +122,39 @@ const LandingRightMenu = () => {
         </div>
       )}
     </div>
+  );
+};
+
+// Title with left-to-right typing animation
+const TypingTitle = () => {
+  const text = 'Stop wasting time producing a report.';
+  const [typed, setTyped] = React.useState('');
+  const [done, setDone] = React.useState(false);
+
+  React.useEffect(() => {
+    let i = 0;
+    const speed = 45; // ms per character
+    const timer = setInterval(() => {
+      i += 1;
+      setTyped(text.slice(0, i));
+      if (i >= text.length) {
+        clearInterval(timer);
+        setDone(true);
+      }
+    }, speed);
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <h1 className="text-2xl md:text-3xl font-semibold text-white/90 mx-auto">
+      <span>{typed}</span>
+      {!done && (
+        <span
+          aria-hidden="true"
+          className="align-middle ml-1 inline-block w-[2px] h-6 md:h-7 bg-white/80 animate-pulse"
+        />
+      )}
+      <span className="sr-only">{text}</span>
+    </h1>
   );
 };
