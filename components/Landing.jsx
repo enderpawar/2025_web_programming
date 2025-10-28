@@ -15,10 +15,10 @@ const Landing = () => {
             <span className="text-white/50 hidden sm:inline">JS Online Compiler</span>
           </div>
           <nav className="hidden md:flex items-center space-x-6 text-sm text-white/80">
-            <a className="hover:text-white/100" href="#blog">Blog</a>
+            {/* <a className="hover:text-white/100" href="#blog">Blog</a>
             <a className="hover:text-white/100" href="#contact">Contact</a>
             <a className="hover:text-white/100" href="#help">Help</a>
-            <a className="hover:text-white/100" href="#donate">Donate</a>
+            <a className="hover:text-white/100" href="#donate">Donate</a> */}
           </nav>
           <LandingRightMenu />
         </div>

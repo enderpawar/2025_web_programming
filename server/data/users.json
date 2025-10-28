@@ -26,5 +26,12 @@
     "name": "이진우",
     "passwordHash": "$2a$10$SbpZ2KCe8B3JZDCI8Xsoe.OGBZY2UTbrRaTqUG/eIwuGJ6HloWP2C",
     "createdAt": 1761620368792
+  },
+  {
+    "id": "c8ac6f17-c038-45a6-bce4-d299b5ba9674",
+    "email": "test@test",
+    "name": "test",
+    "passwordHash": "$2a$10$WYWBQS7JyDmeEUP/8Pc4C.2V9P.UrdivWEyqIBfW7YI/Hv4C6Axv2",
+    "createdAt": 1761626868176
   }
 ]
