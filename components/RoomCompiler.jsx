@@ -3,7 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Editor from './Editor.jsx';
 import Console from './Console.jsx';
 import { OutputType } from '../types.js';
-import { storage } from '../storage.js';
+import { api } from '../api.js';
+import { io } from 'socket.io-client';
 
 const defaultCode = `// Room scoped JS file.\n// Write code here and click Run. Use Save to persist per room.\n\nfunction greet(name) {\n  return \`Hello, \${name}!\`;\n}\n\nconst message = greet('Room');\nconsole.log(message);`;
 
@@ -35,7 +36,7 @@ const RoomCompiler = () => {
   const params = useParams();
   const navigate = useNavigate();
   const roomId = params.roomId;
-  const room = storage.getRoom(roomId);
+  const [room, setRoom] = useState(null);
 
   const [code, setCode] = useState('');
   const [output, setOutput] = useState([]);
@@ -44,10 +45,45 @@ const RoomCompiler = () => {
   const [savedAt, setSavedAt] = useState(null);
 
   useEffect(() => {
-    if (!room) return;
-    const existing = storage.getRoomCode(roomId);
-    setCode(existing ?? defaultCode);
+    (async () => {
+      try {
+        const r = await api.room(roomId);
+        setRoom(r);
+        const c = await api.getCode(roomId);
+        setCode(c?.code ?? defaultCode);
+      } catch (e) {
+        console.error(e);
+      }
+    })();
   }, [roomId]);
+
+  // Realtime collaboration (basic): broadcast code changes, apply remote updates
+  useEffect(() => {
+    if (!roomId) return;
+    const socket = io(api.API_URL, { transports: ['websocket'] });
+    const clientId = Math.random().toString(36).slice(2);
+    socket.emit('join', { roomId });
+    socket.on('code:remote', ({ code: remote, clientId: from }) => {
+      if (from === clientId) return;
+      setCode((curr) => (curr === remote ? curr : remote));
+    });
+    const onLocalChange = (value) => {
+      socket.emit('code:change', { roomId, code: value, clientId });
+    };
+    // Patch Editor setCode to also broadcast by effect on code state
+    // We'll attach a small observer
+    let last = null;
+    const interval = setInterval(() => {
+      if (last !== code) {
+        last = code;
+        onLocalChange(code);
+      }
+    }, 600);
+    return () => {
+      clearInterval(interval);
+      socket.disconnect();
+    };
+  }, [roomId, code]);
 
   const handleRunCode = useCallback(() => {
     setIsRunning(true);
@@ -106,9 +142,14 @@ const RoomCompiler = () => {
 
   const save = useCallback(async () => {
     setSaving(true);
-    storage.setRoomCode(roomId, code);
-    setSavedAt(Date.now());
-    setSaving(false);
+    try {
+      await api.saveCode(roomId, code);
+      setSavedAt(Date.now());
+    } catch (e) {
+      alert(e.message);
+    } finally {
+      setSaving(false);
+    }
   }, [roomId, code]);
 
   if (!room) {

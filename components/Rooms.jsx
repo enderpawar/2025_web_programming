@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { storage } from '../storage.js';
+import { api, setToken } from '../api.js';
+import AuthModal from './AuthModal.jsx';
 
 const PillInput = ({ placeholder, value, onChange }) => (
   <input
@@ -88,16 +89,21 @@ const Rooms = () => {
   const [filters, setFilters] = useState({ room: '', group: '', author: '' });
   const [rooms, setRooms] = useState([]);
   const [open, setOpen] = useState(false);
+  const [authOpen, setAuthOpen] = useState(false);
+  const [me, setMe] = useState(null);
 
   useEffect(() => {
-    // load or seed
-    const current = storage.getRooms();
-    if (current.length === 0) {
-      const seeded = storage.seedRooms();
-      setRooms(seeded);
-    } else {
-      setRooms(current);
-    }
+    (async () => {
+      try {
+        const who = await api.me();
+        setMe(who);
+        const list = await api.rooms();
+        setRooms(list);
+      } catch (e) {
+        // Not logged in
+        setAuthOpen(true);
+      }
+    })();
   }, []);
 
   const filtered = useMemo(() => {
@@ -116,7 +122,15 @@ const Rooms = () => {
       {/* Top bar */}
       <header className="border-b border-white/10 bg-[#0e1c2d]/80 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="text-teal-300 font-extrabold tracking-widest text-xl">JSC</div>
+          <button
+            type="button"
+            onClick={() => navigate('/')}
+            className="text-teal-300 font-extrabold tracking-widest text-xl hover:opacity-90 focus:outline-none"
+            aria-label="Go to main"
+            title="Go to main"
+          >
+            JSC
+          </button>
           <button className="px-3 py-1.5 rounded-md text-sm bg-teal-500 hover:bg-teal-400 text-black font-semibold" onClick={() => setOpen(true)}>
             CREATE
           </button>
@@ -144,9 +158,30 @@ const Rooms = () => {
         open={open}
         onClose={() => setOpen(false)}
         onCreate={(payload) => {
-          const created = storage.createRoom(payload);
-          setRooms((prev) => [created, ...prev]);
-          setOpen(false);
+          (async () => {
+            try {
+              const created = await api.createRoom(payload);
+              setRooms((prev) => [created, ...prev]);
+              setOpen(false);
+            } catch (e) {
+              alert(e.message);
+            }
+          })();
+        }}
+      />
+
+      <AuthModal
+        open={authOpen}
+        onClose={() => setAuthOpen(false)}
+        onAuthed={async () => {
+          try {
+            const who = await api.me();
+            setMe(who);
+            const list = await api.rooms();
+            setRooms(list);
+          } catch (e) {
+            console.error(e);
+          }
         }}
       />
     </div>
