@@ -8,7 +8,7 @@ const Landing = () => {
   return (
     <div className="min-h-screen bg-[#0f2135] text-white flex flex-col">
       {/* Top navigation */}
-      <header className="w-full border-b border-white/10 bg-[#0e1c2d]/80 backdrop-blur-sm">
+  <header className="relative z-30 w-full border-b border-white/10 bg-[#0e1c2d]/80 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="text-teal-300 font-extrabold tracking-widest text-xl">JSC</div>
@@ -25,36 +25,67 @@ const Landing = () => {
       </header>
 
       {/* Hero */}
-      <main className="flex-1">
-        <section className="max-w-4xl mx-auto px-4 pt-20 md:pt-28 text-center">
-          <div className="w-8 mx-auto border-t-2 border-white/50 mb-8" />
-          <TypingTitle />
-          <p className="mt-3 text-white/70">
-            We give you an instant IDE to learn and study group.
+      <main className="flex-1 relative overflow-hidden">
+        {/* Background accents */}
+  <div aria-hidden className="pointer-events-none absolute inset-0 z-0">
+          <div className="absolute -top-24 -left-24 w-[420px] h-[420px] rounded-full bg-sky-500/10 blur-3xl jsc-blob1" />
+          <div className="absolute top-40 -right-24 w-[520px] h-[520px] rounded-full bg-purple-500/10 blur-3xl jsc-blob2" />
+          <div className="absolute -bottom-24 left-1/3 w-[360px] h-[360px] rounded-full bg-teal-400/10 blur-3xl jsc-blob3" />
+        </div>
+
+        {/* Headline */}
+  <section className="relative z-10 max-w-5xl mx-auto px-4 pt-20 md:pt-28 text-center">
+          <TypingTitle pre="Turn your ideas into " highlight="code" />
+          <p className="mt-4 text-base md:text-lg text-white/70">
+            What will you create? The possibilities are endless.
           </p>
-          <div className="mt-8">
+          <div className="mt-8 flex items-center justify-center gap-3">
             <button
               onClick={() => navigate('/rooms')}
-              className="px-6 py-3 rounded-md bg-sky-500 hover:bg-sky-400 text-white font-semibold shadow-lg shadow-sky-500/20"
+              className="px-5 md:px-6 py-3 rounded-md bg-sky-500 hover:bg-sky-400 text-white font-semibold shadow-lg shadow-sky-500/20"
             >
-              STUDY
+              Start studying
+            </button>
+            <button
+              onClick={() => navigate('/signup')}
+              className="px-5 md:px-6 py-3 rounded-md border border-white/20 hover:border-white/40 text-white/90"
+            >
+              Sign up
             </button>
           </div>
         </section>
 
-        {/* Terminal preview */}
-        <section className="max-w-5xl mx-auto px-4 mt-14">
-          <div className="relative mx-auto max-w-3xl">
-            <div className="rounded-t-xl bg-gray-700/30 border border-white/10 p-2 flex space-x-1 w-full">
-              <span className="w-3 h-3 rounded-full bg-red-400" />
-              <span className="w-3 h-3 rounded-full bg-yellow-400" />
-              <span className="w-3 h-3 rounded-full bg-green-500" />
-              <span className="ml-auto text-xs text-white/60 pr-2">guest@JSC: ~</span>
+        {/* Prompt-style panel */}
+  <section className="relative z-10 max-w-5xl mx-auto px-4 mt-10 md:mt-14">
+          <div className="mx-auto max-w-3xl rounded-2xl border border-white/10 bg-[#0c1e32]/80 backdrop-blur md:p-6 p-4 shadow-2xl shadow-black/30">
+            <div className="flex flex-wrap items-center gap-2 text-xs text-white/70">
+              <button className="px-2.5 py-1 rounded-md bg-white/10 hover:bg-white/15">Get suggestions</button>
+              <button className="px-2.5 py-1 rounded-md bg-white/10 hover:bg-white/15">Write a prompt</button>
             </div>
-            <div className="rounded-b-xl bg-[#0b1a2a] border-x border-b border-white/10 p-4 font-mono text-sm text-white/80">
-                  <pre className="whitespace-pre-wrap">{
-                    "Welcome to JSC — JavaScript Study Console\n$ help\ncommands: rooms, problems, run, submit, profile, logout\nhint: 방 목록 → 문제 목록 → 문제 선택 후 실행\ntip: Run 은 브라우저 실행, Run Tests 는 서버 채점\napi: /api/rooms/:id/problems, /submit 등 주요 엔드포인트\n$ _"
-                  }</pre>
+            <div className="mt-4 md:mt-5 text-left text-xl md:text-2xl leading-relaxed text-white/90">
+              <div>
+                <span className="text-white/70">Make me</span>
+                <span className="underline decoration-sky-400/60 decoration-2 underline-offset-4 ml-2 text-white"> an algorithm playground</span>
+              </div>
+              <div>
+                <span className="text-white/70">for</span>
+                <span className="underline decoration-emerald-400/60 decoration-2 underline-offset-4 ml-2 text-white"> students</span>
+              </div>
+              <div>
+                <span className="text-white/70">that helps</span>
+                <span className="underline decoration-purple-400/60 decoration-2 underline-offset-4 ml-2 text-white"> solve coding problems</span>
+              </div>
+              <div>
+                <span className="text-white/70">instantly</span>
+              </div>
+            </div>
+            <div className="mt-5">
+              <button
+                onClick={() => navigate('/rooms')}
+                className="w-full md:w-auto px-5 py-3 rounded-lg bg-teal-500 hover:bg-teal-400 text-black font-semibold"
+              >
+                Start building with JSC →
+              </button>
             </div>
           </div>
         </section>
@@ -103,7 +134,7 @@ const LandingRightMenu = () => {
         Profile
       </button>
       {open && (
-        <div className="absolute right-0 mt-2 w-64 bg-[#202a3a] text-white rounded-lg border border-white/10 shadow-xl p-4 space-y-2 z-10">
+  <div className="absolute right-0 mt-2 w-64 bg-[#202a3a] text-white rounded-lg border border-white/10 shadow-xl p-4 space-y-2 z-50">
           <div className="font-semibold">{me.name}</div>
           <div className="text-white/70 text-sm">{me.email}</div>
           <div className="h-px bg-white/10 my-2" />
@@ -125,36 +156,41 @@ const LandingRightMenu = () => {
   );
 };
 
-// Title with left-to-right typing animation
-const TypingTitle = () => {
-  const text = 'Study Together, Code Together.';
-  const [typed, setTyped] = React.useState('');
-  const [done, setDone] = React.useState(false);
+// Title with left-to-right typing animation and gradient highlight for the last word
+const TypingTitle = ({ pre = 'Turn your ideas into ', highlight = 'code' }) => {
+  const full = pre + highlight;
+  const preLen = pre.length;
+  const fullLen = full.length;
+  const [i, setI] = React.useState(0);
 
   React.useEffect(() => {
-    let i = 0;
-    const speed = 45; // ms per character
+    let idx = 0;
+    const speed = 50; // slowed ~25%
     const timer = setInterval(() => {
-      i += 1;
-      setTyped(text.slice(0, i));
-      if (i >= text.length) {
+      idx += 1;
+      setI(idx);
+      if (idx >= fullLen) {
         clearInterval(timer);
-        setDone(true);
       }
     }, speed);
     return () => clearInterval(timer);
-  }, []);
+  }, [fullLen]);
+
+  const typedPre = pre.slice(0, Math.min(i, preLen));
+  const typedHi = i > preLen ? highlight.slice(0, i - preLen) : '';
+  const done = i >= fullLen;
 
   return (
-    <h1 className="text-2xl md:text-3xl font-semibold text-white/90 mx-auto">
-      <span>{typed}</span>
+    <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-white">
+      <span className="text-white/90">{typedPre}</span>
+      <span className="bg-gradient-to-r from-sky-300 via-cyan-200 to-emerald-200 bg-clip-text text-transparent">{typedHi}</span>
       {!done && (
         <span
           aria-hidden="true"
-          className="align-middle ml-1 inline-block w-[2px] h-6 md:h-7 bg-white/80 animate-pulse"
+          className="align-middle ml-1 inline-block w-[2px] h-8 md:h-12 bg-white/80 animate-pulse"
         />
       )}
-      <span className="sr-only">{text}</span>
+      <span className="sr-only">{full}</span>
     </h1>
   );
 };

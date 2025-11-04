@@ -1,2 +1,22 @@
 /* Global styles for JS Online Compiler. Intentionally minimal. */
-:root {}
+
+/* Floating background blobs for Landing hero */
+@keyframes jsc-float-1 {
+	0% { transform: translate3d(0,0,0) scale(1); }
+	50% { transform: translate3d(24px, -18px, 0) scale(1.06); }
+	100% { transform: translate3d(0,0,0) scale(1); }
+}
+@keyframes jsc-float-2 {
+	0% { transform: translate3d(0,0,0) scale(1); }
+	50% { transform: translate3d(-28px, 22px, 0) scale(1.04); }
+	100% { transform: translate3d(0,0,0) scale(1); }
+}
+@keyframes jsc-float-3 {
+	0% { transform: translate3d(0,0,0) scale(1); }
+	50% { transform: translate3d(16px, 24px, 0) scale(1.05); }
+	100% { transform: translate3d(0,0,0) scale(1); }
+}
+
+.jsc-blob1 { animation: jsc-float-1 22s ease-in-out infinite; }
+.jsc-blob2 { animation: jsc-float-2 26s ease-in-out infinite; animation-delay: 1.2s; }
+.jsc-blob3 { animation: jsc-float-3 20s ease-in-out infinite; animation-delay: 0.8s; }
