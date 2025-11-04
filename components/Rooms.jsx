@@ -52,10 +52,11 @@ const RoomCard = ({ room, onClick, canDelete, onDelete }) => (
     {canDelete && (
       <button
         title="Delete room"
+        aria-label="Delete room"
         onClick={(e) => { e.stopPropagation(); onDelete?.(); }}
-        className="px-2 py-1 rounded bg-red-500/80 hover:bg-red-500 text-white text-xs"
+        className="px-2 py-1 rounded bg-transparent hover:bg-white/10 text-white/70 text-xs"
       >
-        Delete
+        X
       </button>
     )}
   </div>

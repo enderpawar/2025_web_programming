@@ -1,26 +1,16 @@
 [
   {
-    "id": "c6a92c5a-051b-425a-b38d-025a71584b75",
+    "id": "6e0d615d-3ce1-4da6-972b-e63c9a114cc8",
     "name": "test",
     "groupName": "test",
-    "authorName": "test",
+    "authorName": "tset",
     "logoUrl": "",
-    "ownerId": "c8ac6f17-c038-45a6-bce4-d299b5ba9674",
-    "public": false,
-    "createdAt": 1761626887319
-  },
-  {
-    "id": "5872676a-b60c-4318-aecd-3d25e8428e5d",
-    "name": "123123",
-    "groupName": "123123",
-    "authorName": "123123",
-    "logoUrl": "123123",
     "ownerId": "e758406c-b53f-4f83-b617-47fbc665df8a",
-    "public": false,
-    "createdAt": 1761619649577,
+    "public": true,
+    "createdAt": 1762222195544,
     "problems": [
       {
-        "id": "b4413261-0a3a-40dc-8504-4cca84feaa6f",
+        "id": "5d02f18e-59e2-4eb9-8a8b-088c0a6b4877",
         "title": "Two Sum",
         "description": "Given an array of numbers and a target, return indices of the two numbers that add up to target.",
         "difficulty": "Easy",
@@ -63,6 +53,16 @@
         ]
       }
     ]
+  },
+  {
+    "id": "c6a92c5a-051b-425a-b38d-025a71584b75",
+    "name": "test",
+    "groupName": "test",
+    "authorName": "test",
+    "logoUrl": "",
+    "ownerId": "c8ac6f17-c038-45a6-bce4-d299b5ba9674",
+    "public": false,
+    "createdAt": 1761626887319
   },
   {
     "id": "cee421a8-a104-4aac-990d-5789bfa4c47a",

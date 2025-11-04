@@ -14,7 +14,14 @@ const ProblemCard = ({ problem, onClick, canDelete, onDelete }) => (
       </div>
     </button>
     {canDelete && problem.id !== 'legacy' && (
-      <button title="Delete" onClick={onDelete} className="px-2 py-1 rounded bg-red-500/80 hover:bg-red-500 text-white text-xs">Delete</button>
+      <button
+        title="Delete problem"
+        aria-label="Delete problem"
+        onClick={onDelete}
+        className="px-2 py-1 rounded bg-transparent hover:bg-white/10 text-white/70 text-xs"
+      >
+        X
+      </button>
     )}
   </div>
 );
