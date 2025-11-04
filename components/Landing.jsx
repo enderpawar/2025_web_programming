@@ -53,7 +53,7 @@ const Landing = () => {
             </div>
             <div className="rounded-b-xl bg-[#0b1a2a] border-x border-b border-white/10 p-4 font-mono text-sm text-white/80">
                   <pre className="whitespace-pre-wrap">{
-                    "Welcome to JSC main page. - Type help for a list of supported commands.\n$ help\nSupported commands: about, experience, education, skills, contact\n$ _"
+                    "Welcome to JSC — JavaScript Study Console\n$ help\ncommands: rooms, problems, run, submit, profile, logout\nhint: 방 목록 → 문제 목록 → 문제 선택 후 실행\ntip: Run 은 브라우저 실행, Run Tests 는 서버 채점\napi: /api/rooms/:id/problems, /submit 등 주요 엔드포인트\n$ _"
                   }</pre>
             </div>
           </div>
@@ -127,7 +127,7 @@ const LandingRightMenu = () => {
 
 // Title with left-to-right typing animation
 const TypingTitle = () => {
-  const text = 'Stop wasting time producing a report.';
+  const text = 'Study Together, Code Together.';
   const [typed, setTyped] = React.useState('');
   const [done, setDone] = React.useState(false);
 

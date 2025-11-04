@@ -33,5 +33,13 @@
     "name": "test",
     "passwordHash": "$2a$10$WYWBQS7JyDmeEUP/8Pc4C.2V9P.UrdivWEyqIBfW7YI/Hv4C6Axv2",
     "createdAt": 1761626868176
+  },
+  {
+    "id": "af6a6abd-52e9-4056-9ebe-a263fb09a3e0",
+    "email": "test3@naver.com",
+    "name": "test",
+    "passwordHash": "$2a$10$lnSPrMDohPhFdGFuvhZ9audYIi9AnUBVH4uv58jU3DjkIR0UD0C3S",
+    "createdAt": 1762219601926,
+    "isAdmin": false
   }
 ]

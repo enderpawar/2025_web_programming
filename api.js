@@ -46,14 +46,41 @@ export const api = {
   async room(id) {
     return req(`/api/rooms/${id}`);
   },
+  async problems(roomId) {
+    return req(`/api/rooms/${roomId}/problems`);
+  },
+  async problem(roomId, problemId) {
+    return req(`/api/rooms/${roomId}/problems/${problemId}`);
+  },
+  async deleteProblem(roomId, problemId) {
+    return req(`/api/rooms/${roomId}/problems/${problemId}`, { method: 'DELETE' });
+  },
   async getCode(id) {
     return req(`/api/rooms/${id}/code`);
   },
   async saveCode(id, code) {
     return req(`/api/rooms/${id}/code`, { method: 'PUT', body: { code } });
   },
+  async getProblemCode(roomId, problemId) {
+    return req(`/api/rooms/${roomId}/problems/${problemId}/code`);
+  },
+  async saveProblemCode(roomId, problemId, code) {
+    return req(`/api/rooms/${roomId}/problems/${problemId}/code`, { method: 'PUT', body: { code } });
+  },
   async shareRoom(id) {
     return req(`/api/rooms/${id}/share`, { method: 'POST' });
+  },
+  async deleteRoom(id) {
+    return req(`/api/rooms/${id}`, { method: 'DELETE' });
+  },
+  async submitSolution(id, code) {
+    return req(`/api/rooms/${id}/submit`, { method: 'POST', body: { code } });
+  },
+  async submitProblemSolution(roomId, problemId, code) {
+    return req(`/api/rooms/${roomId}/problems/${problemId}/submit`, { method: 'POST', body: { code } });
+  },
+  async createProblem(id, problem) {
+    return req(`/api/rooms/${id}/problems`, { method: 'POST', body: problem });
   },
   token,
   API_URL,

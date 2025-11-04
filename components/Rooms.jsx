@@ -35,26 +35,39 @@ const Avatar = ({ logoUrl, title }) => {
   );
 };
 
-const RoomCard = ({ room, onClick }) => (
-  <button
-    onClick={onClick}
-    className="w-full text-left bg-white/5 hover:bg-white/10 transition rounded-xl border border-white/10 p-4 flex items-center gap-4"
-  >
-    <Avatar logoUrl={room.logoUrl} title={room.name} />
-    <div className="flex-1 overflow-hidden">
-      <div className="text-lg font-semibold text-white/90 truncate">{room.name}</div>
-      <div className="text-sm text-white/70 truncate">{room.authorName}</div>
-      <div className="text-xs text-white/50 truncate">{room.groupName}</div>
-    </div>
-    <div className="text-white/30">›</div>
-  </button>
+const RoomCard = ({ room, onClick, canDelete, onDelete }) => (
+  <div className="w-full bg-white/5 hover:bg-white/10 transition rounded-xl border border-white/10 p-4 flex items-center gap-4">
+    <button
+      onClick={onClick}
+      className="flex-1 text-left flex items-center gap-4"
+    >
+      <Avatar logoUrl={room.logoUrl} title={room.name} />
+      <div className="flex-1 overflow-hidden">
+        <div className="text-lg font-semibold text-white/90 truncate">{room.name}</div>
+        <div className="text-sm text-white/70 truncate">{room.authorName}</div>
+        <div className="text-xs text-white/50 truncate">{room.groupName}</div>
+      </div>
+      <div className="text-white/30">›</div>
+    </button>
+    {canDelete && (
+      <button
+        title="Delete room"
+        onClick={(e) => { e.stopPropagation(); onDelete?.(); }}
+        className="px-2 py-1 rounded bg-red-500/80 hover:bg-red-500 text-white text-xs"
+      >
+        Delete
+      </button>
+    )}
+  </div>
 );
+
 
 const CreateRoomModal = ({ open, onClose, onCreate }) => {
   const [name, setName] = useState('');
   const [groupName, setGroupName] = useState('');
   const [authorName, setAuthorName] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
+  const [makePublic, setMakePublic] = useState(true);
 
   if (!open) return null;
   return (
@@ -66,6 +79,9 @@ const CreateRoomModal = ({ open, onClose, onCreate }) => {
           <input className="w-full bg-white/5 rounded-lg px-3 py-2 outline-none border border-white/10" placeholder="Group Name" value={groupName} onChange={(e) => setGroupName(e.target.value)} />
           <input className="w-full bg-white/5 rounded-lg px-3 py-2 outline-none border border-white/10" placeholder="Author Name" value={authorName} onChange={(e) => setAuthorName(e.target.value)} />
           <input className="w-full bg-white/5 rounded-lg px-3 py-2 outline-none border border-white/10" placeholder="Logo URL (optional)" value={logoUrl} onChange={(e) => setLogoUrl(e.target.value)} />
+          <label className="flex items-center gap-2 text-sm text-white/80">
+            <input type="checkbox" className="accent-teal-500" checked={makePublic} onChange={(e)=>setMakePublic(e.target.checked)} /> Make Public
+          </label>
         </div>
         <div className="mt-5 flex justify-end gap-2">
           <button className="px-3 py-2 rounded-md bg-white/10 hover:bg-white/20" onClick={onClose}>Cancel</button>
@@ -73,7 +89,13 @@ const CreateRoomModal = ({ open, onClose, onCreate }) => {
             className="px-3 py-2 rounded-md bg-teal-500 hover:bg-teal-400 text-black font-semibold"
             onClick={() => {
               if (!name.trim()) return;
-              onCreate({ name: name.trim(), groupName: groupName.trim(), authorName: authorName.trim(), logoUrl: logoUrl.trim() || undefined });
+              onCreate({
+                name: name.trim(),
+                groupName: groupName.trim(),
+                authorName: authorName.trim(),
+                logoUrl: logoUrl.trim() || undefined,
+                makePublic,
+              });
             }}
           >
             Create
@@ -131,9 +153,11 @@ const Rooms = () => {
           >
             JSC
           </button>
-          <button className="px-3 py-1.5 rounded-md text-sm bg-teal-500 hover:bg-teal-400 text-black font-semibold" onClick={() => setOpen(true)}>
-            CREATE
-          </button>
+          {me && (
+            <button className="px-3 py-1.5 rounded-md text-sm bg-teal-500 hover:bg-teal-400 text-black font-semibold" onClick={() => setOpen(true)}>
+              CREATE
+            </button>
+          )}
         </div>
       </header>
 
@@ -147,7 +171,22 @@ const Rooms = () => {
       {/* Rooms list */}
       <div className="max-w-6xl mx-auto px-4 space-y-6 pb-12">
         {filtered.map((room) => (
-          <RoomCard key={room.id} room={room} onClick={() => navigate(`/rooms/${room.id}`)} />
+          <RoomCard
+            key={room.id}
+            room={room}
+            onClick={() => navigate(`/rooms/${room.id}/problems`)}
+            canDelete={me && me.id === room.ownerId}
+            onDelete={async () => {
+              const ok = confirm('Delete this room and all its problems and codes? This action cannot be undone.');
+              if (!ok) return;
+              try {
+                await api.deleteRoom(room.id);
+                setRooms((prev) => prev.filter((r) => r.id !== room.id));
+              } catch (e) {
+                alert(e.message);
+              }
+            }}
+          />
         ))}
         {filtered.length === 0 && (
           <div className="text-white/60 text-center py-16">No rooms found. Try creating one.</div>

@@ -51,6 +51,7 @@ export function authRequired(req, res, next) {
   if (!token) return res.status(401).json({ error: 'missing token' });
   try {
     const decoded = jwt.verify(token, secret);
+    // Keep token payload minimal; enrich user in handlers by reading users.json
     req.user = { id: decoded.id, email: decoded.email };
     next();
   } catch {
