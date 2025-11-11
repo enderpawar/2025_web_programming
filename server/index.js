@@ -420,28 +420,29 @@ app.post('/api/hint', authRequired, async (req, res) => {
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
-    // Create a thoughtful prompt for hints
-    const prompt = `You are a helpful coding tutor. A student is working on the following problem:
+    // Create a thoughtful prompt for hints in Korean
+    const prompt = `당신은 친절한 코딩 튜터입니다. 학생이 다음 문제를 풀고 있습니다:
 
-Title: ${problemTitle || 'Coding Problem'}
-Difficulty: ${difficulty || 'Unknown'}
-Description:
+제목: ${problemTitle || '코딩 문제'}
+난이도: ${difficulty || '알 수 없음'}
+설명:
 ${problemDescription}
 
-${currentCode ? `Their current code is:
+${currentCode ? `학생의 현재 코드:
 \`\`\`javascript
 ${currentCode}
 \`\`\`
-` : 'They haven\'t started coding yet.'}
+` : '아직 코드를 작성하지 않았습니다.'}
 
-Please provide a helpful hint that:
-1. Does NOT give away the complete solution
-2. Guides them toward the right approach
-3. Suggests what data structures or algorithms might be useful
-4. Points out any obvious issues in their current code (if provided)
-5. Encourages them to think about edge cases
+다음 조건을 만족하는 도움이 되는 힌트를 한국어로 제공해주세요:
+1. 완전한 정답 코드를 알려주지 마세요
+2. 올바른 접근 방법으로 유도해주세요
+3. 유용한 자료구조나 알고리즘을 제안해주세요
+4. 현재 코드의 명백한 문제점을 지적해주세요 (코드가 제공된 경우)
+5. Edge case를 고려하도록 격려해주세요
 
-Keep the hint concise (3-5 sentences) and educational.`;
+힌트는 간결하게 3-5문장으로 작성하고, 교육적이어야 합니다.
+반드시 한국어로 답변해주세요.`;
 
     console.log('Sending request to Gemini API...');
     const result = await model.generateContent(prompt);
