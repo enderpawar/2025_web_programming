@@ -259,24 +259,73 @@ const RoomCompiler = () => {
               {problem.difficulty && (
                 <div className="text-xs inline-block px-2 py-0.5 rounded bg-white/10 mb-2">{problem.difficulty}</div>
               )}
+              
+              {/* Function Name */}
+              {problem.functionName && (
+                <div className="mt-3 mb-3">
+                  <div className="text-xs font-semibold text-white/60 mb-1">Function Name</div>
+                  <div className="bg-black/30 rounded px-3 py-2 font-mono text-sm text-blue-300">
+                    {problem.functionName}
+                  </div>
+                </div>
+              )}
+
               <div className="prose prose-invert max-w-none text-sm whitespace-pre-wrap leading-6">
                 {problem.description || 'No description provided.'}
               </div>
+              
+              {/* Starter Code Preview */}
+              {problem.starterCode && (
+                <div className="mt-4">
+                  <div className="font-semibold mb-2 text-white/80">Starter Code</div>
+                  <pre className="bg-black/30 rounded p-3 text-xs font-mono text-gray-300 overflow-x-auto">
+                    {problem.starterCode}
+                  </pre>
+                </div>
+              )}
+
+              {/* Sample Test Cases */}
               {Array.isArray(problem.samples) && problem.samples.length > 0 && (
                 <div className="mt-4">
-                  <div className="font-semibold mb-2">Samples</div>
-                  <ul className="space-y-2 text-sm">
+                  <div className="font-semibold mb-2 text-white/80">Sample Test Cases</div>
+                  <div className="space-y-3">
                     {problem.samples.map((s, idx) => (
-                      <li key={idx} className="bg-black/20 rounded p-2 font-mono">
-                        <div className="text-white/70">Input: {JSON.stringify(s.input)}</div>
-                        <div className="text-white/70">Output: {JSON.stringify(s.output)}</div>
-                      </li>
+                      <div key={idx} className="bg-black/20 rounded p-3 border border-white/10">
+                        <div className="text-xs font-semibold text-blue-400 mb-2">Sample {idx + 1}</div>
+                        <div className="space-y-1">
+                          <div>
+                            <span className="text-white/50 text-xs">Input:</span>
+                            <pre className="font-mono text-sm text-white/90 mt-1 bg-black/20 rounded px-2 py-1">
+                              {JSON.stringify(s.input)}
+                            </pre>
+                          </div>
+                          <div>
+                            <span className="text-white/50 text-xs">Output:</span>
+                            <pre className="font-mono text-sm text-green-400 mt-1 bg-black/20 rounded px-2 py-1">
+                              {JSON.stringify(s.output)}
+                            </pre>
+                          </div>
+                        </div>
+                      </div>
                     ))}
-                  </ul>
+                  </div>
+                </div>
+              )}
+
+              {/* Hidden Test Cases Info */}
+              {Array.isArray(problem.tests) && problem.tests.length > 0 && (
+                <div className="mt-4">
+                  <div className="font-semibold mb-2 text-white/80">Test Cases</div>
+                  <div className="bg-black/20 rounded p-3 border border-white/10">
+                    <div className="text-xs text-white/60">
+                      {problem.tests.length} hidden test case{problem.tests.length !== 1 ? 's' : ''} will be used to evaluate your solution.
+                    </div>
+                  </div>
                 </div>
               )}
             </>
           )}
+
           <div className="mt-4 flex gap-2">
             <button onClick={handleRunCode} disabled={isRunning} className="px-3 py-1.5 rounded bg-blue-600 hover:bg-blue-500 disabled:bg-blue-800 text-white text-sm">{isRunning ? 'Running…' : 'Run'}</button>
             {problem && (
@@ -350,7 +399,12 @@ const RoomCompiler = () => {
           <Editor code={code} setCode={setCode} onRun={handleRunCode} isRunning={isRunning} />
         </div>
         <div className="md:col-span-1 flex flex-col min-h-0">
-          <Console output={output} onClear={handleClearConsole} />
+          <Console 
+            output={output} 
+            onClear={handleClearConsole} 
+            problem={problem}
+            code={code}
+          />
         </div>
       </div>
     </div>

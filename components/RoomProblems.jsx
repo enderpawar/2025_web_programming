@@ -32,8 +32,8 @@ const CreateProblemModal = ({ open, onClose, onCreate, roomId, onGenerateComplet
   const [functionName, setFunctionName] = useState('solve');
   const [description, setDescription] = useState('정수 배열과 타겟이 주어졌을 때, 타겟에 합산되는 두 수의 인덱스를 반환하는 함수를 작성하세요.');
   const [starterCode, setStarterCode] = useState('function solve(nums, target) {\n  // TODO\n}');
-  const [samples, setSamples] = useState('[{"input":[[2,7,11,15],9],"output":[0,1]}]');
-  const [tests, setTests] = useState('[{"input":[[2,7,11,15],9],"output":[0,1]}]');
+  const [samplePairs, setSamplePairs] = useState([{ input: '[[2,7,11,15],9]', output: '[0,1]' }]);
+  const [testPairs, setTestPairs] = useState([{ input: '[[2,7,11,15],9]', output: '[0,1]' }]);
   const [err, setErr] = useState('');
   const [pdfFile, setPdfFile] = useState(null);
   const [generating, setGenerating] = useState(false);
@@ -53,8 +53,125 @@ const CreateProblemModal = ({ open, onClose, onCreate, roomId, onGenerateComplet
           </div>
           <textarea className="input form-textarea" placeholder="Description" value={description} onChange={(e)=>setDescription(e.target.value)} />
           <textarea className="input form-code-textarea" placeholder="Starter Code" value={starterCode} onChange={(e)=>setStarterCode(e.target.value)} />
-          <textarea className="input form-code-textarea" placeholder='Samples JSON' value={samples} onChange={(e)=>setSamples(e.target.value)} />
-          <textarea className="input form-code-textarea" placeholder='Tests JSON' value={tests} onChange={(e)=>setTests(e.target.value)} />
+          
+          {/* Sample Test Cases */}
+          <div style={{ marginTop: 16 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+              <label style={{ fontWeight: 600 }}>Sample Test Cases</label>
+              <button 
+                type="button"
+                className="btn btn-ghost"
+                style={{ padding: '4px 12px', fontSize: '14px' }}
+                onClick={() => setSamplePairs([...samplePairs, { input: '', output: '' }])}
+              >
+                + Add Sample
+              </button>
+            </div>
+            {samplePairs.map((pair, idx) => (
+              <div key={idx} style={{ marginBottom: 12, padding: 12, border: '1px solid #444', borderRadius: 8 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                  <span style={{ fontWeight: 500, color: '#60a5fa' }}>Sample {idx + 1}</span>
+                  {samplePairs.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => setSamplePairs(samplePairs.filter((_, i) => i !== idx))}
+                      style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: '14px' }}
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+                <div style={{ marginBottom: 8 }}>
+                  <label style={{ display: 'block', marginBottom: 4, fontSize: '14px', color: '#9ca3af' }}>Input</label>
+                  <textarea
+                    className="input"
+                    placeholder="e.g., [[2,7,11,15],9]"
+                    value={pair.input}
+                    onChange={(e) => {
+                      const newPairs = [...samplePairs];
+                      newPairs[idx].input = e.target.value;
+                      setSamplePairs(newPairs);
+                    }}
+                    style={{ minHeight: '60px', fontFamily: 'monospace' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: 4, fontSize: '14px', color: '#9ca3af' }}>Output</label>
+                  <textarea
+                    className="input"
+                    placeholder="e.g., [0,1]"
+                    value={pair.output}
+                    onChange={(e) => {
+                      const newPairs = [...samplePairs];
+                      newPairs[idx].output = e.target.value;
+                      setSamplePairs(newPairs);
+                    }}
+                    style={{ minHeight: '60px', fontFamily: 'monospace' }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Hidden Test Cases */}
+          <div style={{ marginTop: 16 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+              <label style={{ fontWeight: 600 }}>Hidden Test Cases</label>
+              <button 
+                type="button"
+                className="btn btn-ghost"
+                style={{ padding: '4px 12px', fontSize: '14px' }}
+                onClick={() => setTestPairs([...testPairs, { input: '', output: '' }])}
+              >
+                + Add Test
+              </button>
+            </div>
+            {testPairs.map((pair, idx) => (
+              <div key={idx} style={{ marginBottom: 12, padding: 12, border: '1px solid #444', borderRadius: 8 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                  <span style={{ fontWeight: 500, color: '#60a5fa' }}>Test {idx + 1}</span>
+                  {testPairs.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => setTestPairs(testPairs.filter((_, i) => i !== idx))}
+                      style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: '14px' }}
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+                <div style={{ marginBottom: 8 }}>
+                  <label style={{ display: 'block', marginBottom: 4, fontSize: '14px', color: '#9ca3af' }}>Input</label>
+                  <textarea
+                    className="input"
+                    placeholder="e.g., [[2,7,11,15],9]"
+                    value={pair.input}
+                    onChange={(e) => {
+                      const newPairs = [...testPairs];
+                      newPairs[idx].input = e.target.value;
+                      setTestPairs(newPairs);
+                    }}
+                    style={{ minHeight: '60px', fontFamily: 'monospace' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: 4, fontSize: '14px', color: '#9ca3af' }}>Output</label>
+                  <textarea
+                    className="input"
+                    placeholder="e.g., [0,1]"
+                    value={pair.output}
+                    onChange={(e) => {
+                      const newPairs = [...testPairs];
+                      newPairs[idx].output = e.target.value;
+                      setTestPairs(newPairs);
+                    }}
+                    style={{ minHeight: '60px', fontFamily: 'monospace' }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+
           {err && <div className="error-message">{err}</div>}
         </div>
         <div className="modal-footer">
@@ -81,10 +198,19 @@ const CreateProblemModal = ({ open, onClose, onCreate, roomId, onGenerateComplet
           >{generating ? 'Generating...' : 'Generate from PDF'}</button>
           <button className="btn btn-primary" onClick={()=>{
             try{
-              const s = samples ? JSON.parse(samples) : [];
-              const t = tests ? JSON.parse(tests) : [];
+              // Convert input/output pairs to JSON format
+              const s = samplePairs.map(pair => ({
+                input: JSON.parse(pair.input),
+                output: JSON.parse(pair.output)
+              }));
+              const t = testPairs.map(pair => ({
+                input: JSON.parse(pair.input),
+                output: JSON.parse(pair.output)
+              }));
               onCreate({ title, difficulty, functionName, description, language:'javascript', starterCode, samples:s, tests:t });
-            }catch(e){ setErr('Invalid JSON in samples/tests'); }
+            }catch(e){ 
+              setErr('Invalid JSON format in input/output fields. Please check your syntax.'); 
+            }
           }}>Create</button>
         </div>
       </div>

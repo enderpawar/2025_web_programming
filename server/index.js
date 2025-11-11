@@ -13,6 +13,7 @@ import dotenv from 'dotenv';
 import multer from 'multer';
 import pdfParse from 'pdf-parse';
 import crypto from 'node:crypto';
+import { JSDOM } from 'jsdom';
 
 // Load environment variables
 dotenv.config();
@@ -26,6 +27,60 @@ app.use(express.json({ limit: '1mb' }));
 
 // multer for file uploads (memory storage)
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
+
+// Helper function to run code with optional DOM environment
+function runCodeTest(code, functionName, testCase, useDOM = false) {
+  const input = Array.isArray(testCase.input) ? testCase.input : [testCase.input];
+  let actual, ok = false, err = null;
+  
+  try {
+    let context;
+    
+    if (useDOM) {
+      // Create JSDOM environment
+      const dom = new JSDOM('<!DOCTYPE html><html><body><div id="result"></div></body></html>');
+      const { window } = dom;
+      const { document } = window;
+      
+      context = vm.createContext({
+        console: { log(){}, error(){}, warn(){}, info(){} },
+        document,
+        window,
+        // Common DOM globals
+        Element: window.Element,
+        HTMLElement: window.HTMLElement,
+        Node: window.Node
+      });
+    } else {
+      context = vm.createContext({ console: { log(){}, error(){}, warn(){}, info(){} } });
+    }
+    
+    const scriptCode = `${code}\n;typeof ${functionName}==='function' ? ${functionName} : undefined;`;
+    const script = new vm.Script(scriptCode, { timeout: 1000 });
+    const fn = script.runInContext(context, { timeout: 1000 });
+    
+    if (typeof fn !== 'function') {
+      return { actual: null, ok: false, err: `Function ${functionName} not found` };
+    }
+    
+    const resv = fn.apply(null, input);
+    actual = resv;
+    
+    // For DOM tests, check the DOM state instead of return value
+    if (useDOM && testCase.domCheck) {
+      const element = context.document.getElementById(testCase.domCheck.elementId);
+      if (element) {
+        actual = element.innerHTML || element.textContent || '';
+      }
+    }
+    
+    ok = JSON.stringify(actual) === JSON.stringify(testCase.output);
+  } catch (e) {
+    err = String(e?.message || e);
+  }
+  
+  return { actual, ok, err };
+}
 
 // Health
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
@@ -432,39 +487,17 @@ app.post('/api/rooms/:id/submit', authRequired, async (req, res) => {
   }
 
   const fnName = problem.functionName || 'solve';
-  // Build sandbox
-  const context = vm.createContext({ console: { log(){}, error(){}, warn(){}, info(){} } });
-  const scriptCode = `${code}\n;typeof ${fnName}==='function' ? ${fnName} : undefined;`;
-  let fn;
-  try {
-    const script = new vm.Script(scriptCode, { timeout: 1000 });
-    fn = script.runInContext(context, { timeout: 1000 });
-  } catch (e) {
-    return res.status(200).json({ passed: false, results: [], error: String(e?.message || e) });
-  }
-  if (typeof fn !== 'function') {
-    return res.status(200).json({ passed: false, results: [], error: `Function ${fnName} not found` });
-  }
-
+  const useDOM = problem.useDOM || false; // Check if problem requires DOM
+  
   const results = [];
   let allPass = true;
+  
   for (const [index, t] of problem.tests.entries()) {
-    const input = Array.isArray(t.input) ? t.input : [t.input];
-    let actual;
-    let ok = false;
-    let err = null;
-    try {
-      const resv = fn.apply(null, input);
-      actual = resv;
-      ok = JSON.stringify(resv) === JSON.stringify(t.output);
-    } catch (e) {
-      allPass = false;
-      ok = false;
-      err = String(e?.message || e);
-    }
+    const { actual, ok, err } = runCodeTest(code, fnName, t, useDOM);
     if (!ok) allPass = false;
     results.push({ index, input: t.input, expected: t.output, actual, pass: ok, error: err });
   }
+  
   res.json({ passed: allPass, results });
 });
 
@@ -705,34 +738,19 @@ app.post('/api/rooms/:id/problems/:pid/submit', authRequired, async (req, res) =
   if (problem.language !== 'javascript' || !Array.isArray(problem.tests)) {
     return res.status(400).json({ error: 'no tests configured' });
   }
+  
   const fnName = problem.functionName || 'solve';
-  const context = vm.createContext({ console: { log(){}, error(){}, warn(){}, info(){} } });
-  const scriptCode = `${code}\n;typeof ${fnName}==='function' ? ${fnName} : undefined;`;
-  let fn;
-  try {
-    const script = new vm.Script(scriptCode, { timeout: 1000 });
-    fn = script.runInContext(context, { timeout: 1000 });
-  } catch (e) {
-    return res.status(200).json({ passed: false, results: [], error: String(e?.message || e) });
-  }
-  if (typeof fn !== 'function') {
-    return res.status(200).json({ passed: false, results: [], error: `Function ${fnName} not found` });
-  }
+  const useDOM = problem.useDOM || false;
+  
   const results = [];
   let allPass = true;
+  
   for (const [index, t] of problem.tests.entries()) {
-    const input = Array.isArray(t.input) ? t.input : [t.input];
-    let actual; let ok = false; let err = null;
-    try {
-      const resv = fn.apply(null, input);
-      actual = resv;
-      ok = JSON.stringify(resv) === JSON.stringify(t.output);
-    } catch (e) {
-      allPass = false; ok = false; err = String(e?.message || e);
-    }
+    const { actual, ok, err } = runCodeTest(code, fnName, t, useDOM);
     if (!ok) allPass = false;
     results.push({ index, input: t.input, expected: t.output, actual, pass: ok, error: err });
   }
+  
   res.json({ passed: allPass, results });
 });
 
