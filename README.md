@@ -85,34 +85,6 @@ const handleRunCode = useCallback(() => {
 
 ---
 
-## 🎯 학습 체크리스트
-
-- [ ] React 컴포넌트의 기본 구조를 이해했나요?
-- [ ] `useState`와 `useCallback` 훅의 역할을 알고 있나요?
-- [ ] `Function` constructor가 `eval`보다 안전한 이유는?
-- [ ] Props를 통한 컴포넌트 간 데이터 전달 방식을 이해했나요?
-- [ ] 에디터의 코드와 콘솔 출력이 어떻게 연결되는지 파악했나요?
-
----
-
-## 🔥 도전 과제
-
-### 레벨 1: 기본
-1. **라인 넘버 추가**: 에디터에 라인 넘버를 표시해보세요
-2. **폰트 크기 조절**: 에디터 폰트 크기를 변경하는 버튼 추가
-3. **다크/라이트 테마**: 간단한 테마 전환 기능 구현
-
-### 레벨 2: 중급
-1. **코드 실행 히스토리**: 최근 실행한 코드 5개를 저장하고 다시 불러오기
-2. **실행 시간 측정**: 코드 실행 시간을 측정하여 콘솔에 표시
-3. **키보드 단축키**: Ctrl+Enter로 코드 실행
-
-### 레벨 3: 고급
-1. **Syntax Highlighting**: 간단한 키워드 하이라이팅 구현
-2. **자동 완성**: 기본 JavaScript 키워드 자동완성
-3. **코드 포맷팅**: Prettier 같은 포맷터 통합
-
----
 
 ## 🧠 핵심 개념 설명
 
@@ -151,34 +123,5 @@ setCode(newCode);
 ```
 
 ---
-
-## 📖 참고 자료
-
-- [React 공식 문서](https://react.dev/)
-- [Vite 공식 문서](https://vitejs.dev/)
-- [Function Constructor MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function)
-- [Console API MDN](https://developer.mozilla.org/en-US/docs/Web/API/Console)
-
----
-
-## ❓ FAQ
-
-**Q: Function constructor가 정확히 뭔가요?**  
-A: 문자열로 된 코드를 실제 함수로 변환하여 실행하는 JavaScript의 내장 기능입니다. `eval`보다 스코프가 제한되어 더 안전합니다.
-
-**Q: console.log를 왜 오버라이드하나요?**  
-A: 사용자 코드의 console.log 출력을 캡처하여 우리의 Console 컴포넌트에 표시하기 위해서입니다.
-
-**Q: 왜 textarea를 사용하나요?**  
-A: Week 1에서는 간단한 구현에 집중합니다. 나중 주차에서 더 나은 에디터로 업그레이드할 수 있습니다.
-
----
-
-## 🎓 다음 주차 미리보기
-
-**Week 2: Local Storage 기능**
-- 코드를 브라우저에 저장
-- 여러 코드 스니펫 관리
-- 자동 저장 기능
 
 준비되셨나요? 코딩을 시작해보세요! 🚀
