@@ -54,7 +54,8 @@ const Editor = ({ code, setCode, onRun, onSave, isRunning, savedAt }) => {
               Run
             </>
           )}
-        </button>
+          </button>
+        </div>
       </div>
       <div className="flex-grow p-1 relative">
         <textarea
