@@ -1,18 +1,3 @@
-# Week 2: Local Storage
-
-## 📚 학습 목표
-
-이번 주차에서는 **브라우저에서 JavaScript 코드를 실행하고 콘솔 출력을 보여주는 기본 컴파일러**를 만듭니다.
-
-### 핵심 개념
-- ✅ React 기본 구조 (컴포넌트, Props, State)
-- ✅ 브라우저에서 JavaScript 코드 실행 (`Function` constructor)
-- ✅ `console` 메서드 오버라이딩
-- ✅ 에러 핸들링 (try-catch)
-- ✅ Vite를 사용한 React 개발 환경
-
----
-
 ## 🚀 프로젝트 실행 방법
 
 ### 1. 의존성 설치
@@ -120,8 +105,3 @@ const [output, setOutput] = useState([]);
 
 // State 변경 → 자동 리렌더링
 setCode(newCode);
-```
-
----
-
-준비되셨나요? 코딩을 시작해보세요! 🚀
