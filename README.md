@@ -1,91 +1,91 @@
-## JS Online Compiler – Rooms + Admin Problems
+## JS 온라인 컴파일러 – Rooms + 문제 관리 시스템
 
-This project is a simple in-browser JavaScript playground with Rooms and an optional Admin workflow to create algorithm problems. Each Room can include:
+이 프로젝트는 브라우저 기반 JavaScript 플레이그라운드로, Room 기능과 알고리즘 문제 생성을 위한 관리자 워크플로우를 제공합니다. 각 Room은 다음을 포함할 수 있습니다:
 
-- Metadata (name, group, author)
-- Problem definition (title, description, difficulty, function name, starter code)
-- Test cases to validate solutions
+- 메타데이터 (이름, 그룹, 작성자)
+- 문제 정의 (제목, 설명, 난이도, 함수명, 시작 코드)
+- 솔루션 검증을 위한 테스트 케이스
 
-Users can write code in the browser and run it locally. They can also run tests (submitted to the server) which are executed in a small Node.js sandbox.
+사용자는 브라우저에서 코드를 작성하고 로컬에서 실행할 수 있습니다. 또한 서버에 제출되어 Node.js 샌드박스에서 실행되는 테스트를 실행할 수 있습니다.
 
-### Run Locally
+### 로컬 실행 방법
 
-Prerequisites: Node.js
+필수 요구사항: Node.js
 
-1. Install dependencies
+1. 의존성 설치
    - `npm install`
-2. Configure Gemini API (for AI Hints feature)
-   - Get your API key from [Google AI Studio](https://ai.google.dev/)
-   - Create a `.env` file in the project root
-   - Add: `GEMINI_API_KEY=your_actual_api_key_here`
-3. Start both client and server
+2. Gemini API 설정 (AI 힌트 기능을 위해)
+   - [Google AI Studio](https://ai.google.dev/)에서 API 키를 받으세요
+   - 프로젝트 루트에 `.env` 파일을 생성하세요
+   - 다음을 추가하세요: `GEMINI_API_KEY=your_actual_api_key_here`
+3. 클라이언트와 서버 동시 실행
    - `npm run dev`
 
-The server runs on http://localhost:4000 and the client on http://localhost:5173 by default.
+기본적으로 서버는 http://localhost:4000에서, 클라이언트는 http://localhost:5173에서 실행됩니다.
 
-### AI Hint Feature
+### AI 힌트 기능
 
-The project now includes an AI-powered hint system using Google's Gemini API:
+이 프로젝트는 Google의 Gemini API를 사용한 AI 기반 힌트 시스템을 포함합니다:
 
-- Click the "💡 Get AI Hint" button in any problem to receive intelligent guidance
-- The AI analyzes the problem description and your current code
-- Provides helpful hints without giving away the complete solution
-- Requires `GEMINI_API_KEY` in `.env` file to work
+- 문제에서 "💡 Get AI Hint" 버튼을 클릭하여 지능형 가이드를 받으세요
+- AI가 문제 설명과 현재 코드를 분석합니다
+- 완전한 정답을 알려주지 않으면서 유용한 힌트를 제공합니다
+- `.env` 파일에 `GEMINI_API_KEY`가 필요합니다
 
-**To set up:**
-1. Visit [Google AI Studio](https://ai.google.dev/)
-2. Sign in with your Google account
-3. Click "Get API Key" and create a new key
-4. Copy the key to your `.env` file
+**설정 방법:**
+1. [Google AI Studio](https://ai.google.dev/) 방문
+2. Google 계정으로 로그인
+3. "Get API Key"를 클릭하고 새 키 생성
+4. `.env` 파일에 키를 복사
 
-### Admin setup
+### 관리자 설정
 
-- The system now supports two user roles: **Professor** and **Student**
-- **Default Professor Account:**
-  - Email: `owner@owner`
-  - Password: `owner`
-  - This account is automatically created with professor privileges
+- 시스템은 두 가지 사용자 역할을 지원합니다: **교수** 및 **학생**
+- **기본 교수 계정:**
+  - 이메일: `owner@owner`
+  - 비밀번호: `owner`
+  - 이 계정은 교수 권한으로 자동 생성됩니다
   
-- **Professor Privileges:**
-  1. Can create new Rooms (groups)
-  2. Can invite students to their Rooms
-  3. Can create problems within their Rooms
-  4. Has full control over their Rooms
+- **교수 권한:**
+  1. 새로운 Room(그룹) 생성 가능
+  2. 학생을 Room에 초대 가능
+  3. Room 내에서 문제 생성 가능
+  4. 자신의 Room에 대한 완전한 제어권
 
-- **Student Privileges:**
-  1. Can join Rooms they are invited to
-  2. Can view and solve problems
-  3. Cannot create Rooms or problems
+- **학생 권한:**
+  1. 초대받은 Room에 참여 가능
+  2. 문제를 보고 해결 가능
+  3. Room이나 문제 생성 불가
 
-- Alternatively, set the environment variable `ADMIN_EMAILS` (comma-separated emails) when starting the server. Matching accounts will be treated as admins.
-  - Example (PowerShell):
+- 또는 서버 시작 시 환경 변수 `ADMIN_EMAILS`(쉼표로 구분된 이메일)를 설정할 수 있습니다. 해당 계정은 관리자로 처리됩니다.
+  - 예시 (PowerShell):
     - `$env:ADMIN_EMAILS="admin@example.com,test@test"; npm run dev`
 
-### Using the Professor Features
+### 교수 기능 사용하기
 
-1. **Login as Professor:**
-   - Use `owner@owner` / `owner` or create an account with this email
+1. **교수로 로그인:**
+   - `owner@owner` / `owner`를 사용하거나 이 이메일로 계정 생성
    
-2. **Create a Room:**
-   - Click the "CREATE" button on the Rooms page (only visible to professors)
-   - Fill in room details (name, group, author, etc.)
+2. **Room 생성:**
+   - Rooms 페이지에서 "CREATE" 버튼 클릭 (교수에게만 표시됨)
+   - Room 세부 정보 입력 (이름, 그룹, 작성자 등)
 
-3. **Invite Members:**
-   - Open your created Room
-   - Click "멤버 초대" (Invite Members) button
-   - Select students from the dropdown
-   - Students will now have access to the Room and its problems
+3. **멤버 초대:**
+   - 생성한 Room 열기
+   - "멤버 초대" 버튼 클릭
+   - 드롭다운에서 학생 선택
+   - 학생이 이제 Room과 문제에 접근할 수 있습니다
 
-4. **Create Problems:**
-   - Inside your Room, click "CREATE PROBLEM"
-   - Define the problem with title, description, test cases, etc.
+4. **문제 생성:**
+   - Room 내에서 "CREATE PROBLEM" 클릭
+   - 제목, 설명, 테스트 케이스 등으로 문제 정의
 
-### Problem contract (JavaScript)
+### 문제 규약 (JavaScript)
 
-- The problem must specify a `functionName` (default `solve`). The user’s code should define this function.
-- Tests are an array of objects with `input` and `output`. `input` can be a single value or an array (mapped to function positional arguments). The server will execute:
-  - `result = solve(...inputArray)` and compare with `output` using deep JSON equality.
+- 문제는 `functionName`을 지정해야 합니다 (기본값 `solve`). 사용자의 코드는 이 함수를 정의해야 합니다.
+- 테스트는 `input`과 `output`을 가진 객체 배열입니다. `input`은 단일 값이거나 배열(함수 위치 인수에 매핑됨)일 수 있습니다. 서버는 다음을 실행합니다:
+  - `result = solve(...inputArray)` 그리고 깊은 JSON 동등성을 사용하여 `output`과 비교합니다.
 
-### Notes
+### 참고사항
 
-- This is an educational/demo project. The server sandbox uses Node’s `vm` module and is not hardened for untrusted code in production.
+- 이것은 교육/데모 프로젝트입니다. 서버 샌드박스는 Node의 `vm` 모듈을 사용하며 프로덕션에서 신뢰할 수 없는 코드를 위해 강화되지 않았습니다.
