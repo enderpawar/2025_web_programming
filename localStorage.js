@@ -18,30 +18,50 @@ async function initializeStorage() {
 
   // base path 설정 (GitHub Pages용)
   const basePath = import.meta.env.BASE_URL || '/';
+  
+  console.log('Initializing localStorage with base path:', basePath);
 
   // 사용자 데이터가 없으면 초기화
   if (!localStorage.getItem(STORAGE_KEYS.USERS)) {
     try {
-      const response = await fetch(`${basePath}data/users.json`);
+      const url = `${basePath}data/users.json`;
+      console.log('Fetching users from:', url);
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
       const users = await response.json();
       localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
       console.log('Users loaded:', users.length);
     } catch (error) {
       console.error('Failed to load users.json:', error);
-      localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify([]));
+      // 기본 사용자 데이터
+      const defaultUsers = [
+        { id: "1", email: "owner@owner", password: "owner", name: "교수님", role: "professor" },
+        { id: "2", email: "jinwoo@jinwoo", password: "jinwoo", name: "진우", role: "student" },
+        { id: "3", email: "test2@naver.com", password: "test", name: "테스트2", role: "student" }
+      ];
+      localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(defaultUsers));
+      console.log('Using default users');
     }
   }
 
   // 룸 데이터가 없으면 초기화
   if (!localStorage.getItem(STORAGE_KEYS.ROOMS)) {
     try {
-      const response = await fetch(`${basePath}data/rooms.json`);
+      const url = `${basePath}data/rooms.json`;
+      console.log('Fetching rooms from:', url);
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
       const rooms = await response.json();
       localStorage.setItem(STORAGE_KEYS.ROOMS, JSON.stringify(rooms));
       console.log('Rooms loaded:', rooms.length);
     } catch (error) {
       console.error('Failed to load rooms.json:', error);
       localStorage.setItem(STORAGE_KEYS.ROOMS, JSON.stringify([]));
+      console.log('Using empty rooms array');
     }
   }
 
