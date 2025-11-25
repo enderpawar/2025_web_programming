@@ -57,41 +57,44 @@ export async function generateProblemsFromPdfText(pdfText) {
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
     
-    const prompt = `You are a programming problem generator. Based on the following text extracted from a PDF, generate coding problems suitable for a JavaScript online compiler.
+    const prompt = `당신은 프로그래밍 문제 생성 전문가입니다. 다음 PDF에서 추출한 텍스트를 기반으로 JavaScript 온라인 컴파일러에 적합한 코딩 문제를 생성하세요.
 
-PDF Content:
+PDF 내용:
 ${pdfText}
 
-Generate 1-3 coding problems in the following JSON format:
+다음 JSON 형식으로 1-3개의 코딩 문제를 생성하세요:
 [
   {
-    "title": "Problem Title",
-    "description": "Clear problem description",
+    "title": "문제 제목 (한국어)",
+    "description": "명확한 문제 설명 (한국어, 구체적으로)",
     "difficulty": "Easy|Medium|Hard",
-    "functionName": "functionName",
-    "starterCode": "function functionName(param1, param2) {\\n  // TODO\\n}",
+    "functionName": "solve",
+    "starterCode": "function solve(param1, param2) {\\n  // TODO: 여기에 코드를 작성하세요\\n}",
+    "solution": "function solve(param1, param2) {\\n  // 모범 답안 코드 (주석 포함)\\n  // 알고리즘 설명\\n  return result;\\n}",
     "samples": [
       {
-        "input": [value1, value2],
-        "output": expectedOutput
+        "input": [값1, 값2],
+        "output": 예상출력
       }
     ],
     "tests": [
       {
-        "input": [value1, value2],
-        "output": expectedOutput
+        "input": [값1, 값2],
+        "output": 예상출력
       }
     ]
   }
 ]
 
-Make sure the problems are:
-- Clear and well-defined
-- Have proper test cases
-- Use JavaScript syntax
-- Include at least 2-3 test cases per problem
+생성 규칙:
+- 모든 텍스트는 **반드시 한국어**로 작성
+- title과 description은 명확하고 구체적으로
+- solution 필드에 **완전한 모범 답안 코드** 포함 (주석으로 알고리즘 설명 추가)
+- 각 문제당 최소 2-3개의 테스트 케이스
+- JavaScript 문법 사용
+- samples는 사용자에게 보여지는 예제, tests는 채점용 테스트 케이스
 
-Return ONLY the JSON array, no additional text.`;
+**JSON 배열만 반환하고, 추가 텍스트는 절대 포함하지 마세요.**`;
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
