@@ -404,8 +404,25 @@ export const localAPI = {
 
     for (const tc of testCases) {
       try {
-        const func = new Function('return ' + code)();
-        const result = func[functionName](...tc.input);
+        // 코드 실행 및 함수 추출
+        let func;
+        try {
+          // 먼저 직접 평가 시도 (함수 선언)
+          func = new Function(`
+            ${code}
+            return ${functionName};
+          `)();
+        } catch (e) {
+          // 실패하면 객체로 감싼 형태로 시도
+          const moduleExports = new Function('return ' + code)();
+          func = moduleExports[functionName];
+        }
+        
+        if (typeof func !== 'function') {
+          throw new Error(`${functionName} is not a function`);
+        }
+        
+        const result = func(...tc.input);
         const passed = JSON.stringify(result) === JSON.stringify(tc.output);
         
         results.push({
