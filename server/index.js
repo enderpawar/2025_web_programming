@@ -22,10 +22,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 await ensureData(__dirname);
 
 const app = express();
-app.use(cors({
-  origin: process.env.FRONTEND_URL || '*',
-  credentials: true
-}));
+app.use(cors());
 app.use(express.json({ limit: '1mb' }));
 
 // multer for file uploads (memory storage)
@@ -946,6 +943,6 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT || 4000;
-httpServer.listen(PORT, '0.0.0.0', () => {
-  console.log(`API server listening on port ${PORT}`);
+httpServer.listen(PORT, () => {
+  console.log(`API server listening on http://localhost:${PORT}`);
 });
