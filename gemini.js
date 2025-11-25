@@ -57,20 +57,22 @@ export async function generateProblemsFromPdfText(pdfText) {
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
     
-    const prompt = `당신은 프로그래밍 문제 생성 전문가입니다. 다음 PDF에서 추출한 텍스트를 기반으로 JavaScript 온라인 컴파일러에 적합한 코딩 문제를 생성하세요.
+    const prompt = `당신은 프로그래밍 문제 생성 전문가입니다. 다음 PDF에서 추출한 텍스트를 **반드시 분석하고**, 그 내용과 **직접적으로 관련된** JavaScript 코딩 문제를 **1개만** 생성하세요.
 
 PDF 내용:
 ${pdfText}
 
-다음 JSON 형식으로 1-3개의 코딩 문제를 생성하세요:
+**중요: PDF 내용을 반드시 읽고 이해한 후, 그 내용과 관련된 문제를 만드세요. PDF와 무관한 일반적인 문제는 절대 만들지 마세요.**
+
+다음 JSON 형식으로 **정확히 1개의** 코딩 문제를 생성하세요:
 [
   {
-    "title": "문제 제목 (한국어)",
-    "description": "명확한 문제 설명 (한국어, 구체적으로)",
+    "title": "PDF 내용과 관련된 구체적인 문제 제목 (한국어)",
+    "description": "PDF에서 다룬 개념/알고리즘/주제를 활용하는 명확한 문제 설명 (한국어, PDF 내용 언급)",
     "difficulty": "Easy|Medium|Hard",
     "functionName": "solve",
-    "starterCode": "function solve(param1, param2) {\\n  // TODO: 여기에 코드를 작성하세요\\n}",
-    "solution": "function solve(param1, param2) {\\n  // 모범 답안 코드 (주석 포함)\\n  // 알고리즘 설명\\n  return result;\\n}",
+    "starterCode": "function solve(param1, param2) {\\n  // TODO: 여기에 코드를 작성하세요\\n  // PDF에서 설명한 [개념/알고리즘]을 활용하세요\\n}",
+    "solution": "function solve(param1, param2) {\\n  // PDF에서 설명한 [개념] 활용\\n  // 단계별 구현\\n  \\n  // 예: [알고리즘 설명]\\n  \\n  return result;\\n}",
     "samples": [
       {
         "input": [값1, 값2],
@@ -81,20 +83,24 @@ ${pdfText}
       {
         "input": [값1, 값2],
         "output": 예상출력
+      },
+      {
+        "input": [값3, 값4],
+        "output": 예상출력2
       }
     ]
   }
 ]
 
 생성 규칙:
-- 모든 텍스트는 **반드시 한국어**로 작성
-- title과 description은 명확하고 구체적으로
-- solution 필드에 **완전한 모범 답안 코드** 포함 (주석으로 알고리즘 설명 추가)
-- 각 문제당 최소 2-3개의 테스트 케이스
-- JavaScript 문법 사용
-- samples는 사용자에게 보여지는 예제, tests는 채점용 테스트 케이스
+- **PDF 내용과 직접 관련된 문제만 생성** (예: PDF가 정렬 알고리즘이면 정렬 문제, 그래프면 그래프 문제)
+- 정확히 **1개의 문제만** 배열에 포함
+- description에 "PDF에서 다룬 [개념]을 활용하여..." 등 PDF 내용 명시
+- solution에 주석으로 PDF 개념과의 연관성 설명
+- 모든 텍스트는 **한국어**로 작성
+- 최소 2-3개의 테스트 케이스 포함
 
-**JSON 배열만 반환하고, 추가 텍스트는 절대 포함하지 마세요.**`;
+**JSON 배열만 반환하고, 추가 설명은 포함하지 마세요.**`;
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
