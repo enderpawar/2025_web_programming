@@ -16,10 +16,13 @@ async function initializeStorage() {
     return;
   }
 
+  // base path 설정 (GitHub Pages용)
+  const basePath = import.meta.env.BASE_URL || '/';
+
   // 사용자 데이터가 없으면 초기화
   if (!localStorage.getItem(STORAGE_KEYS.USERS)) {
     try {
-      const response = await fetch('/data/users.json');
+      const response = await fetch(`${basePath}data/users.json`);
       const users = await response.json();
       localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
       console.log('Users loaded:', users.length);
@@ -32,7 +35,7 @@ async function initializeStorage() {
   // 룸 데이터가 없으면 초기화
   if (!localStorage.getItem(STORAGE_KEYS.ROOMS)) {
     try {
-      const response = await fetch('/data/rooms.json');
+      const response = await fetch(`${basePath}data/rooms.json`);
       const rooms = await response.json();
       localStorage.setItem(STORAGE_KEYS.ROOMS, JSON.stringify(rooms));
       console.log('Rooms loaded:', rooms.length);
