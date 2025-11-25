@@ -20,8 +20,11 @@ export const api = {
   },
   
   async login(payload) {
+    console.log('[API] Login called with:', payload);
     await ensureInit();
+    console.log('[API] Init complete, calling localAPI.login');
     const data = localAPI.login(payload.email, payload.password);
+    console.log('[API] Login result:', data);
     return data;
   },
   
