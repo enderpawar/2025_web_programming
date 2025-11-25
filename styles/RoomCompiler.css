@@ -77,13 +77,13 @@
 }
 
 .compiler-title {
-  font-size: 1.125rem;
+  font-size: 1.25rem;
   font-weight: 700;
   color: var(--color-text-primary);
 }
 
 .compiler-subtitle {
-  font-size: 0.875rem;
+  font-size: 1rem;
   color: var(--color-text-muted);
   margin-left: 0.5rem;
 }
@@ -97,7 +97,7 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   color: rgba(255, 255, 255, 0.6);
 }
 
@@ -112,7 +112,7 @@
   border: 1px solid var(--color-border);
   border-radius: 0.375rem;
   color: var(--color-text-primary);
-  font-size: 0.875rem;
+  font-size: 1rem;
   cursor: pointer;
 }
 
@@ -128,7 +128,7 @@
   border-radius: 0.375rem;
   color: #000000;
   font-weight: 600;
-  font-size: 0.875rem;
+  font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.2s;
   display: flex;
@@ -152,7 +152,7 @@
   border-radius: 0.375rem;
   color: #a855f7;
   font-weight: 600;
-  font-size: 0.875rem;
+  font-size: 1rem;
   cursor: pointer;
   transition: all 0.2s;
   display: flex;
@@ -184,7 +184,8 @@
 
 /* Left Panel - Problem Description */
 .compiler-left-panel {
-  width: 468px; /* 360px + 30% = 468px */
+  /* width: 468px; */ /* Now controlled by React state */
+  flex-shrink: 0;
   background-color: var(--color-bg-darker);
   border-right: 1px solid var(--color-border);
   overflow-y: auto;
@@ -195,6 +196,48 @@
 [data-theme="light"] .compiler-left-panel {
   background-color: #f9fafb !important;
   border-right: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Custom scrollbar for left panel - Dark theme */
+.compiler-left-panel::-webkit-scrollbar {
+  width: 10px;
+}
+
+.compiler-left-panel::-webkit-scrollbar-track {
+  background: var(--color-bg-darker);
+  border-radius: 4px;
+}
+
+.compiler-left-panel::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  border: 2px solid var(--color-bg-darker);
+}
+
+.compiler-left-panel::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.compiler-left-panel::-webkit-scrollbar-thumb:active {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+/* Custom scrollbar for left panel - Light theme */
+[data-theme="light"] .compiler-left-panel::-webkit-scrollbar-track {
+  background: #f3f4f6;
+}
+
+[data-theme="light"] .compiler-left-panel::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border: 2px solid #f3f4f6;
+}
+
+[data-theme="light"] .compiler-left-panel::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+[data-theme="light"] .compiler-left-panel::-webkit-scrollbar-thumb:active {
+  background: rgba(0, 0, 0, 0.35);
 }
 
 .problem-section {
@@ -210,7 +253,7 @@
 }
 
 .problem-section-title {
-  font-size: 0.875rem;
+  font-size: 1rem;
   font-weight: 700;
   color: var(--color-text-muted);
   text-transform: uppercase;
@@ -219,7 +262,7 @@
 }
 
 .problem-name {
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   font-weight: 800;
   color: var(--color-text-primary);
   margin-bottom: 1rem;
@@ -233,16 +276,107 @@
 }
 
 .problem-difficulty {
-  padding: 0.25rem 0.75rem;
-  border-radius: 0.375rem;
-  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
   font-weight: 600;
+  margin-bottom: 1.5rem;
+  transition: all 0.2s;
+}
+
+.difficulty-icon {
+  font-size: 1.125rem;
+  display: flex;
+  align-items: center;
+}
+
+/* Easy difficulty - Green */
+.difficulty-easy {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.15));
+  border: 1.5px solid rgba(16, 185, 129, 0.4);
+  color: #10b981;
+}
+
+.difficulty-easy:hover {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(5, 150, 105, 0.25));
+  border-color: rgba(16, 185, 129, 0.6);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+
+[data-theme="light"] .difficulty-easy {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1));
+  border-color: rgba(16, 185, 129, 0.5);
+  color: #059669;
+}
+
+/* Medium difficulty - Orange */
+.difficulty-medium {
+  background: linear-gradient(135deg, rgba(251, 146, 60, 0.15), rgba(249, 115, 22, 0.15));
+  border: 1.5px solid rgba(251, 146, 60, 0.4);
+  color: #fb923c;
+}
+
+.difficulty-medium:hover {
+  background: linear-gradient(135deg, rgba(251, 146, 60, 0.25), rgba(249, 115, 22, 0.25));
+  border-color: rgba(251, 146, 60, 0.6);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(251, 146, 60, 0.2);
+}
+
+[data-theme="light"] .difficulty-medium {
+  background: linear-gradient(135deg, rgba(251, 146, 60, 0.1), rgba(249, 115, 22, 0.1));
+  border-color: rgba(251, 146, 60, 0.5);
+  color: #ea580c;
+}
+
+/* Hard difficulty - Red */
+.difficulty-hard {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(220, 38, 38, 0.15));
+  border: 1.5px solid rgba(239, 68, 68, 0.4);
+  color: #ef4444;
+}
+
+.difficulty-hard:hover {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(220, 38, 38, 0.25));
+  border-color: rgba(239, 68, 68, 0.6);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}
+
+[data-theme="light"] .difficulty-hard {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.1));
+  border-color: rgba(239, 68, 68, 0.5);
+  color: #dc2626;
+}
+
+/* Default difficulty */
+.difficulty-default {
+  background: linear-gradient(135deg, rgba(107, 114, 128, 0.15), rgba(75, 85, 99, 0.15));
+  border: 1.5px solid rgba(107, 114, 128, 0.4);
+  color: #9ca3af;
+}
+
+.difficulty-default:hover {
+  background: linear-gradient(135deg, rgba(107, 114, 128, 0.25), rgba(75, 85, 99, 0.25));
+  border-color: rgba(107, 114, 128, 0.6);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(107, 114, 128, 0.2);
+}
+
+[data-theme="light"] .difficulty-default {
+  background: linear-gradient(135deg, rgba(107, 114, 128, 0.1), rgba(75, 85, 99, 0.1));
+  border-color: rgba(107, 114, 128, 0.5);
+  color: #6b7280;
 }
 
 .problem-language {
   padding: 0.25rem 0.75rem;
   border-radius: 0.375rem;
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   font-weight: 600;
   background-color: rgba(14, 165, 233, 0.1);
   color: var(--color-secondary);
@@ -257,8 +391,9 @@
 .problem-description {
   color: var(--color-text-secondary);
   line-height: 1.6;
-  font-size: 0.875rem;
+  font-size: 1rem;
   white-space: pre-wrap;
+  margin-bottom: 2rem;
 }
 
 .problem-code-block {
@@ -268,7 +403,7 @@
   padding: 1rem;
   margin: 1rem 0;
   font-family: 'Consolas', 'Monaco', monospace;
-  font-size: 0.8125rem;
+  font-size: 0.9375rem;
   color: var(--color-text-primary);
   overflow-x: auto;
 }
@@ -290,6 +425,7 @@
   border: 1px solid var(--color-border);
   border-radius: 0.5rem;
   padding: 1rem;
+  overflow: hidden;
 }
 
 /* Light mode test case card */
@@ -299,7 +435,7 @@
 }
 
 .test-case-label {
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   font-weight: 600;
   color: var(--color-text-muted);
   margin-bottom: 0.5rem;
@@ -311,15 +447,80 @@
   border-radius: 0.375rem;
   padding: 0.5rem 0.75rem;
   font-family: 'Consolas', 'Monaco', monospace;
-  font-size: 0.8125rem;
+  font-size: 0.9375rem;
   color: var(--color-text-primary);
   margin-bottom: 0.5rem;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-all;
+  white-space: pre-wrap;
+  overflow-x: auto;
+  max-width: 100%;
 }
 
 /* Light mode test case value */
 [data-theme="light"] .test-case-value {
   background-color: #f3f4f6;
   border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+/* Custom scrollbar for test case value - Dark theme */
+.test-case-value::-webkit-scrollbar {
+  height: 6px;
+}
+
+.test-case-value::-webkit-scrollbar-track {
+  background: var(--color-bg-darker);
+  border-radius: 3px;
+}
+
+.test-case-value::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+.test-case-value::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Custom scrollbar for test case value - Light theme */
+[data-theme="light"] .test-case-value::-webkit-scrollbar-track {
+  background: #e5e7eb;
+}
+
+[data-theme="light"] .test-case-value::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="light"] .test-case-value::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Panel Resizer */
+.panel-resizer {
+  width: 4px;
+  background-color: var(--color-border);
+  cursor: col-resize;
+  position: relative;
+  flex-shrink: 0;
+  transition: background-color 0.2s;
+}
+
+.panel-resizer:hover {
+  background-color: #3b82f6;
+}
+
+.panel-resizer:active {
+  background-color: #2563eb;
+}
+
+/* Light mode panel resizer */
+[data-theme="light"] .panel-resizer {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .panel-resizer:hover {
+  background-color: #3b82f6;
 }
 
 /* Center Panel - Editor */
@@ -409,7 +610,7 @@
   background-color: var(--color-bg-darker);
   color: var(--color-text-primary);
   font-family: 'Consolas', 'Monaco', monospace;
-  font-size: 0.875rem;
+  font-size: 1rem;
   line-height: 1.5;
   resize: none;
   border: none;
@@ -425,7 +626,8 @@
 
 /* Right Panel - Console & Output */
 .compiler-right-panel {
-  width: 520px; /* 400px + 30% = 520px */
+  /* width: 520px; */ /* Now controlled by React state */
+  flex-shrink: 0;
   background-color: var(--color-bg-darker);
   border-left: 1px solid var(--color-border);
   display: flex;
@@ -458,7 +660,7 @@
   border: none;
   border-bottom: 2px solid transparent;
   color: var(--color-text-muted);
-  font-size: 0.875rem;
+  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
@@ -486,14 +688,56 @@
   background-color: var(--color-bg-dark);
 }
 
+/* Custom scrollbar for console content - Dark theme */
+.console-content::-webkit-scrollbar {
+  width: 10px;
+}
+
+.console-content::-webkit-scrollbar-track {
+  background: var(--color-bg-dark);
+  border-radius: 4px;
+}
+
+.console-content::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  border: 2px solid var(--color-bg-dark);
+}
+
+.console-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.console-content::-webkit-scrollbar-thumb:active {
+  background: rgba(255, 255, 255, 0.35);
+}
+
 /* Light mode console content */
 [data-theme="light"] .console-content {
   background-color: white !important;
 }
 
+/* Custom scrollbar for console content - Light theme */
+[data-theme="light"] .console-content::-webkit-scrollbar-track {
+  background: white;
+}
+
+[data-theme="light"] .console-content::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border: 2px solid white;
+}
+
+[data-theme="light"] .console-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+[data-theme="light"] .console-content::-webkit-scrollbar-thumb:active {
+  background: rgba(0, 0, 0, 0.35);
+}
+
 .console-output {
   font-family: 'Consolas', 'Monaco', monospace;
-  font-size: 0.8125rem;
+  font-size: 0.9375rem;
   line-height: 1.5;
   color: var(--color-text-primary);
   white-space: pre-wrap;
@@ -508,7 +752,7 @@
 /* Custom Test Button - 30% reduced height */
 .console-custom-test-btn {
   padding: 0.35rem 0.75rem !important; /* Original: 0.5rem 1rem */
-  font-size: 0.8125rem !important;
+  font-size: 0.9375rem !important;
   height: auto !important;
 }
 
@@ -516,7 +760,7 @@
   text-align: center;
   padding: 2rem 1rem;
   color: var(--color-text-muted);
-  font-size: 0.875rem;
+  font-size: 1rem;
 }
 
 .console-error {

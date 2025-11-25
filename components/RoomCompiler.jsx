@@ -10,6 +10,42 @@ import '../styles/RoomCompiler.css';
 
 const defaultCode = `// Room scoped JS file.\n// Write code here and click Run. Use Save to persist per room.\n\nfunction greet(name) {\n  return \`Hello, \${name}!\`;\n}\n\nconst message = greet('Room');\nconsole.log(message);`;
 
+// Helper function to format test case input/output in a user-friendly way
+const formatTestCaseData = (data) => {
+  if (data === null) return 'null';
+  if (data === undefined) return 'undefined';
+  
+  // If it's an array, format each element
+  if (Array.isArray(data)) {
+    if (data.length === 0) return '[]';
+    
+    // Check if it's an array of primitives
+    const allPrimitives = data.every(item => 
+      typeof item !== 'object' || item === null
+    );
+    
+    if (allPrimitives) {
+      return `[${data.map(item => JSON.stringify(item)).join(', ')}]`;
+    }
+    
+    // For nested arrays or objects, show structure more clearly
+    return data.map((item, i) => {
+      if (typeof item === 'object' && item !== null) {
+        return `  인자 ${i + 1}: ${JSON.stringify(item)}`;
+      }
+      return `  인자 ${i + 1}: ${JSON.stringify(item)}`;
+    }).join('\n');
+  }
+  
+  // If it's an object
+  if (typeof data === 'object') {
+    return JSON.stringify(data, null, 2);
+  }
+  
+  // Primitives
+  return JSON.stringify(data);
+};
+
 const TopBar = ({ title, subtitle, onBack, onSave, saving, savedAt }) => (
   <header className="compiler-header">
     <div className="compiler-header-content">
@@ -35,6 +71,48 @@ const TopBar = ({ title, subtitle, onBack, onSave, saving, savedAt }) => (
   </header>
 );
 
+// Difficulty badge component with icons
+const DifficultyBadge = ({ difficulty }) => {
+  const getDifficultyConfig = (diff) => {
+    const normalized = diff?.toLowerCase() || 'easy';
+    
+    if (normalized.includes('easy') || normalized.includes('쉬움')) {
+      return {
+        icon: '⭐',
+        className: 'difficulty-easy',
+        label: difficulty
+      };
+    } else if (normalized.includes('medium') || normalized.includes('normal') || normalized.includes('보통')) {
+      return {
+        icon: '⚡',
+        className: 'difficulty-medium',
+        label: difficulty
+      };
+    } else if (normalized.includes('hard') || normalized.includes('어려움')) {
+      return {
+        icon: '🔥',
+        className: 'difficulty-hard',
+        label: difficulty
+      };
+    }
+    
+    return {
+      icon: '📌',
+      className: 'difficulty-default',
+      label: difficulty
+    };
+  };
+
+  const config = getDifficultyConfig(difficulty);
+
+  return (
+    <div className={`problem-difficulty ${config.className}`}>
+      <span className="difficulty-icon">{config.icon}</span>
+      <span>{config.label}</span>
+    </div>
+  );
+};
+
 const RoomCompiler = () => {
   const params = useParams();
   const navigate = useNavigate();
@@ -53,6 +131,10 @@ const RoomCompiler = () => {
   const [aiHint, setAiHint] = useState('');
   const [loadingHint, setLoadingHint] = useState(false);
   const [showHint, setShowHint] = useState(false);
+  
+  // Panel widths (in pixels)
+  const [leftPanelWidth, setLeftPanelWidth] = useState(468);
+  const [rightPanelWidth, setRightPanelWidth] = useState(400);
 
   useEffect(() => {
     (async () => {
@@ -202,6 +284,55 @@ const RoomCompiler = () => {
     }
   }, [problem, code]);
 
+  // Resizer handlers
+  const handleLeftResize = useCallback((e) => {
+    e.preventDefault();
+    const startX = e.clientX;
+    const startWidth = leftPanelWidth;
+
+    const handleMouseMove = (e) => {
+      const delta = e.clientX - startX;
+      const newWidth = Math.max(250, Math.min(800, startWidth + delta));
+      setLeftPanelWidth(newWidth);
+    };
+
+    const handleMouseUp = () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+  }, [leftPanelWidth]);
+
+  const handleRightResize = useCallback((e) => {
+    e.preventDefault();
+    const startX = e.clientX;
+    const startWidth = rightPanelWidth;
+
+    const handleMouseMove = (e) => {
+      const delta = startX - e.clientX;
+      const newWidth = Math.max(250, Math.min(800, startWidth + delta));
+      setRightPanelWidth(newWidth);
+    };
+
+    const handleMouseUp = () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+  }, [rightPanelWidth]);
+
   const [pTitle, setPTitle] = useState('두 수의 합');
   const [pDifficulty, setPDifficulty] = useState('쉬움');
   const [pFunctionName, setPFunctionName] = useState('solve');
@@ -259,12 +390,12 @@ const RoomCompiler = () => {
         savedAt={savedAt}
       />
       <div className="compiler-main">
-        <div className="compiler-left-panel">
+        <div className="compiler-left-panel" style={{ width: `${leftPanelWidth}px` }}>
           {problem && (
             <>
               <div className="problem-name">{problem.title || 'Problem'}</div>
               {problem.difficulty && (
-                <div className="problem-difficulty">{problem.difficulty}</div>
+                <DifficultyBadge difficulty={problem.difficulty} />
               )}
               
               {/* Function Name */}
@@ -294,27 +425,43 @@ const RoomCompiler = () => {
               {/* Sample Test Cases */}
               {Array.isArray(problem.samples) && problem.samples.length > 0 && (
                 <div className="problem-section">
-                  <div className="problem-section-title">Sample Test Cases</div>
+                  <div className="problem-section-title">샘플 테스트 케이스</div>
                   <div className="test-cases-list">
-                    {problem.samples.map((s, idx) => (
-                      <div key={idx} className="test-case-card">
-                        <div className="problem-section-title">Sample {idx + 1}</div>
-                        <div>
+                    {problem.samples.map((s, idx) => {
+                      const isArrayInput = Array.isArray(s.input);
+                      const hasMultipleArgs = isArrayInput && s.input.length > 1;
+                      
+                      return (
+                        <div key={idx} className="test-case-card">
+                          <div className="problem-section-title">샘플 {idx + 1}</div>
                           <div>
-                            <span className="test-case-label">Input:</span>
-                            <pre className="test-case-value">
-                              {JSON.stringify(s.input)}
-                            </pre>
-                          </div>
-                          <div>
-                            <span className="test-case-label">Output:</span>
-                            <pre className="test-case-value">
-                              {JSON.stringify(s.output)}
-                            </pre>
+                            <div>
+                              <span className="test-case-label">입력:</span>
+                              <pre className="test-case-value">
+                                {hasMultipleArgs ? (
+                                  s.input.map((arg, i) => (
+                                    <div key={i} style={{ marginBottom: i < s.input.length - 1 ? '0.25rem' : 0 }}>
+                                      <span style={{ color: 'var(--color-text-muted)', fontSize: '0.75rem' }}>
+                                        인자 {i + 1}:{' '}
+                                      </span>
+                                      {JSON.stringify(arg)}
+                                    </div>
+                                  ))
+                                ) : (
+                                  formatTestCaseData(s.input)
+                                )}
+                              </pre>
+                            </div>
+                            <div>
+                              <span className="test-case-label">출력:</span>
+                              <pre className="test-case-value">
+                                {formatTestCaseData(s.output)}
+                              </pre>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -337,10 +484,10 @@ const RoomCompiler = () => {
               {/* Hidden Test Cases Info */}
               {Array.isArray(problem.tests) && problem.tests.length > 0 && (
                 <div className="problem-section">
-                  <div className="problem-section-title">Test Cases</div>
+                  <div className="problem-section-title">테스트 케이스</div>
                   <div className="test-case-card">
                     <div className="test-case-label">
-                      {problem.tests.length} hidden test case{problem.tests.length !== 1 ? 's' : ''} will be used to evaluate your solution.
+                      {problem.tests.length}개의 히든 테스트 케이스가 솔루션 평가에 사용됩니다.
                     </div>
                   </div>
                 </div>
@@ -349,10 +496,10 @@ const RoomCompiler = () => {
           )}
 
           <div className="problem-section compiler-action-buttons">
-            <button onClick={handleRunCode} disabled={isRunning} className="btn btn-primary compiler-run-btn">{isRunning ? 'Running…' : 'Run'}</button>
+            <button onClick={handleRunCode} disabled={isRunning} className="btn btn-primary compiler-run-btn">{isRunning ? '실행 중…' : '실행'}</button>
             {problem && (
               <>
-                <button onClick={runTests} className="btn btn-primary compiler-run-btn">Run Tests</button>
+                <button onClick={runTests} className="btn btn-primary compiler-run-btn">테스트 실행</button>
                 <button 
                   onClick={getAiHint} 
                   disabled={loadingHint}
@@ -361,12 +508,12 @@ const RoomCompiler = () => {
                   {loadingHint ? (
                     <>
                       <span>⚡</span>
-                      <span>Loading...</span>
+                      <span>로딩 중...</span>
                     </>
                   ) : (
                     <>
                       <span>💡</span>
-                      <span>Get AI Hint</span>
+                      <span>AI 힌트 받기</span>
                     </>
                   )}
                 </button>
@@ -377,7 +524,7 @@ const RoomCompiler = () => {
             <div className="hint-panel">
               <div className="hint-panel-header">
                 <span className="hint-panel-icon">💡</span>
-                <span className="hint-panel-title">AI Hint</span>
+                <span className="hint-panel-title">AI 힌트</span>
                 <button 
                   onClick={() => setShowHint(false)}
                   className="editor-action-btn"
@@ -389,10 +536,10 @@ const RoomCompiler = () => {
               <div className="hint-panel-content">
                 {loadingHint ? (
                   <div className="hint-loading">
-                    <span>Thinking...</span>
+                    <span>생각하는 중...</span>
                   </div>
                 ) : (
-                  aiHint || 'Click "Get AI Hint" to receive guidance.'
+                  aiHint || '"AI 힌트 받기"를 클릭하여 도움을 받으세요.'
                 )}
               </div>
             </div>
@@ -408,7 +555,7 @@ const RoomCompiler = () => {
                       {r.error && <div className="test-result-badge-fail">{r.error}</div>}
                       {!r.pass && (
                         <div className="test-case-label">
-                          Check your logic and try again. Use custom test to debug.
+                          로직을 확인한 후 다시 시도해보세요.
                         </div>
                       )}
                     </div>
@@ -421,10 +568,20 @@ const RoomCompiler = () => {
             </div>
           )}
         </div>
+        <div 
+          className="panel-resizer" 
+          onMouseDown={handleLeftResize}
+          title="드래그하여 패널 크기 조정"
+        />
         <div className="compiler-center-panel">
           <Editor code={code} setCode={setCode} onRun={handleRunCode} isRunning={isRunning} />
         </div>
-        <div className="compiler-right-panel">
+        <div 
+          className="panel-resizer" 
+          onMouseDown={handleRightResize}
+          title="드래그하여 패널 크기 조정"
+        />
+        <div className="compiler-right-panel" style={{ width: `${rightPanelWidth}px` }}>
           <Console 
             output={output} 
             onClear={handleClearConsole} 

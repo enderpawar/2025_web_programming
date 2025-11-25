@@ -376,6 +376,75 @@
   width: 100%;
 }
 
+/* PDF Upload Section */
+.pdf-upload-section {
+  margin-bottom: 1.5rem;
+}
+
+.pdf-upload-label {
+  display: block;
+  cursor: pointer;
+}
+
+.pdf-file-input {
+  display: none;
+}
+
+.pdf-upload-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  border: 2px dashed var(--color-border);
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.05), rgba(14, 165, 233, 0.05));
+  transition: all 0.3s ease;
+  gap: 0.75rem;
+}
+
+.pdf-upload-box:hover {
+  border-color: var(--color-primary);
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.1), rgba(14, 165, 233, 0.1));
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(20, 184, 166, 0.15);
+}
+
+.pdf-upload-icon {
+  font-size: 2.5rem;
+  filter: grayscale(0.3);
+  transition: all 0.3s;
+}
+
+.pdf-upload-box:hover .pdf-upload-icon {
+  filter: grayscale(0);
+  transform: scale(1.1);
+}
+
+.pdf-upload-text {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  text-align: center;
+}
+
+.pdf-upload-hint {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+/* Light mode PDF upload */
+[data-theme="light"] .pdf-upload-box {
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.08), rgba(14, 165, 233, 0.08));
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="light"] .pdf-upload-box:hover {
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.15), rgba(14, 165, 233, 0.15));
+  border-color: var(--color-primary);
+}
+
 .create-problem-form {
   display: flex;
   flex-direction: column;
@@ -386,6 +455,82 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
+}
+
+/* Difficulty Select Dropdown */
+.difficulty-select-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.difficulty-select-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  margin-bottom: 0.25rem;
+}
+
+.difficulty-select {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background-color: var(--color-bg-input);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  color: var(--color-text-primary);
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  padding-right: 2.5rem;
+}
+
+.difficulty-select:hover {
+  border-color: var(--color-border-focus);
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.difficulty-select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+}
+
+.difficulty-select option {
+  background-color: var(--color-bg-darker);
+  color: var(--color-text-primary);
+  padding: 0.75rem;
+  font-size: 1rem;
+}
+
+/* Light mode difficulty select */
+[data-theme="light"] .difficulty-select {
+  background-color: white;
+  border-color: rgba(0, 0, 0, 0.15);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23374151' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+}
+
+[data-theme="light"] .difficulty-select:hover {
+  background-color: #f9fafb;
+  border-color: rgba(0, 0, 0, 0.25);
+}
+
+[data-theme="light"] .difficulty-select option {
+  background-color: white;
+  color: #111827;
+}
+
+/* Function Name Input */
+.function-name-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-family: 'Consolas', 'Monaco', monospace;
+  font-size: 1rem;
+  font-weight: 500;
 }
 
 .form-group {

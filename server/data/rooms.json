@@ -8,7 +8,8 @@
     "ownerId": "3f35d788-748b-4a84-95ac-f876c6814d83",
     "public": true,
     "members": [
-      "3f35d788-748b-4a84-95ac-f876c6814d83"
+      "3f35d788-748b-4a84-95ac-f876c6814d83",
+      "0b8892fb-2a36-4944-ba67-ac5dfb7131c3"
     ],
     "createdAt": 1762831991520,
     "problems": [
@@ -273,359 +274,6 @@
         ]
       },
       {
-        "id": "e9f3cd3f-3036-4b68-afc0-c782e2a413f7",
-        "title": "API 요청 URL 생성",
-        "description": "도시 이름과 API 키를 입력받아 OpenWeatherAPI 요청 URL을 생성하는 함수를 작성하세요. URL은 다음 형식이어야 합니다: http://api.openweathermap.org/data/2.5/weather?q={city}&APPID={apiKey}",
-        "difficulty": "Medium",
-        "functionName": "createWeatherApiUrl",
-        "language": "javascript",
-        "starterCode": "function createWeatherApiUrl(city, apiKey) {\n  // TODO: 도시 이름과 API 키를 사용하여 날씨 API URL을 생성하세요.\n  // city: 도시 이름 (문자열)\n  // apiKey: OpenWeatherAPI 키 (문자열)\n  // return: 날씨 API URL (문자열)\n}",
-        "solution": "function createWeatherApiUrl(city, apiKey) {\n  return `http://api.openweathermap.org/data/2.5/weather?q=${city}&APPID=${apiKey}`;\n}",
-        "samples": [
-          {
-            "input": [
-              "Seoul",
-              "YOUR_API_KEY"
-            ],
-            "output": "http://api.openweathermap.org/data/2.5/weather?q=Seoul&APPID=YOUR_API_KEY"
-          },
-          {
-            "input": [
-              "Tokyo",
-              "ANOTHER_API_KEY"
-            ],
-            "output": "http://api.openweathermap.org/data/2.5/weather?q=Tokyo&APPID=ANOTHER_API_KEY"
-          }
-        ],
-        "tests": [
-          {
-            "input": [
-              "Seoul",
-              "YOUR_API_KEY"
-            ],
-            "output": "http://api.openweathermap.org/data/2.5/weather?q=Seoul&APPID=YOUR_API_KEY"
-          },
-          {
-            "input": [
-              "Tokyo",
-              "ANOTHER_API_KEY"
-            ],
-            "output": "http://api.openweathermap.org/data/2.5/weather?q=Tokyo&APPID=ANOTHER_API_KEY"
-          },
-          {
-            "input": [
-              "London",
-              "MY_API_KEY"
-            ],
-            "output": "http://api.openweathermap.org/data/2.5/weather?q=London&APPID=MY_API_KEY"
-          }
-        ]
-      },
-      {
-        "id": "2ae54f96-32d8-4a73-8f66-bbecb857da59",
-        "title": "날씨 설명 추출",
-        "description": "OpenWeatherAPI 응답 객체가 주어졌을 때, 날씨 설명(description)을 추출하는 함수를 작성하세요. 날씨 설명은 weather 배열 안에 있는 첫 번째 객체의 description 필드에 있습니다.",
-        "difficulty": "Medium",
-        "functionName": "extractWeatherDescription",
-        "language": "javascript",
-        "starterCode": "function extractWeatherDescription(weatherData) {\n  // TODO: 날씨 데이터에서 날씨 설명을 추출하여 반환하세요.\n  // weatherData: OpenWeatherAPI에서 받은 날씨 데이터 객체\n  // return: 날씨 설명 (문자열)\n}",
-        "solution": "function extractWeatherDescription(weatherData) {\n  if (weatherData.weather && weatherData.weather.length > 0) {\n    return weatherData.weather[0].description;\n  }\n  return null;\n}",
-        "samples": [
-          {
-            "input": [
-              {
-                "coord": {
-                  "lon": 126.9778,
-                  "lat": 37.5683
-                },
-                "weather": [
-                  {
-                    "id": 804,
-                    "main": "Clouds",
-                    "description": "overcast clouds",
-                    "icon": "04n"
-                  }
-                ],
-                "base": "stations",
-                "main": {
-                  "temp": 298.96,
-                  "feels_like": 299.27,
-                  "temp_min": 298.38,
-                  "temp_max": 299.86,
-                  "pressure": 1008,
-                  "humidity": 64,
-                  "sea_level": 1008,
-                  "grnd_level": 1002
-                },
-                "visibility": 10000,
-                "wind": {
-                  "speed": 0.65,
-                  "deg": 45,
-                  "gust": 2.05
-                },
-                "clouds": {
-                  "all": 99
-                },
-                "dt": 1628774089,
-                "sys": {
-                  "type": 1,
-                  "id": 5509,
-                  "country": "KR",
-                  "sunrise": 1628714711,
-                  "sunset": 1628764160
-                },
-                "timezone": 32400,
-                "id": 1835848,
-                "name": "Seoul",
-                "cod": 200
-              }
-            ],
-            "output": "overcast clouds"
-          },
-          {
-            "input": [
-              {
-                "coord": {
-                  "lon": 139.6917,
-                  "lat": 35.6895
-                },
-                "weather": [
-                  {
-                    "id": 803,
-                    "main": "Clouds",
-                    "description": "broken clouds",
-                    "icon": "04d"
-                  }
-                ],
-                "base": "stations",
-                "main": {
-                  "temp": 292.13,
-                  "feels_like": 292.05,
-                  "temp_min": 290.86,
-                  "temp_max": 292.97,
-                  "pressure": 1012,
-                  "humidity": 60
-                },
-                "visibility": 10000,
-                "wind": {
-                  "speed": 3.09,
-                  "deg": 210
-                },
-                "clouds": {
-                  "all": 75
-                },
-                "dt": 1697608890,
-                "sys": {
-                  "type": 1,
-                  "id": 8073,
-                  "country": "JP",
-                  "sunrise": 1697581904,
-                  "sunset": 1697622183
-                },
-                "timezone": 32400,
-                "id": 1850147,
-                "name": "Tokyo",
-                "cod": 200
-              }
-            ],
-            "output": "broken clouds"
-          }
-        ],
-        "tests": [
-          {
-            "input": [
-              {
-                "coord": {
-                  "lon": 126.9778,
-                  "lat": 37.5683
-                },
-                "weather": [
-                  {
-                    "id": 804,
-                    "main": "Clouds",
-                    "description": "overcast clouds",
-                    "icon": "04n"
-                  }
-                ],
-                "base": "stations",
-                "main": {
-                  "temp": 298.96,
-                  "feels_like": 299.27,
-                  "temp_min": 298.38,
-                  "temp_max": 299.86,
-                  "pressure": 1008,
-                  "humidity": 64,
-                  "sea_level": 1008,
-                  "grnd_level": 1002
-                },
-                "visibility": 10000,
-                "wind": {
-                  "speed": 0.65,
-                  "deg": 45,
-                  "gust": 2.05
-                },
-                "clouds": {
-                  "all": 99
-                },
-                "dt": 1628774089,
-                "sys": {
-                  "type": 1,
-                  "id": 5509,
-                  "country": "KR",
-                  "sunrise": 1628714711,
-                  "sunset": 1628764160
-                },
-                "timezone": 32400,
-                "id": 1835848,
-                "name": "Seoul",
-                "cod": 200
-              }
-            ],
-            "output": "overcast clouds"
-          },
-          {
-            "input": [
-              {
-                "coord": {
-                  "lon": 139.6917,
-                  "lat": 35.6895
-                },
-                "weather": [
-                  {
-                    "id": 803,
-                    "main": "Clouds",
-                    "description": "broken clouds",
-                    "icon": "04d"
-                  }
-                ],
-                "base": "stations",
-                "main": {
-                  "temp": 292.13,
-                  "feels_like": 292.05,
-                  "temp_min": 290.86,
-                  "temp_max": 292.97,
-                  "pressure": 1012,
-                  "humidity": 60
-                },
-                "visibility": 10000,
-                "wind": {
-                  "speed": 3.09,
-                  "deg": 210
-                },
-                "clouds": {
-                  "all": 75
-                },
-                "dt": 1697608890,
-                "sys": {
-                  "type": 1,
-                  "id": 8073,
-                  "country": "JP",
-                  "sunrise": 1697581904,
-                  "sunset": 1697622183
-                },
-                "timezone": 32400,
-                "id": 1850147,
-                "name": "Tokyo",
-                "cod": 200
-              }
-            ],
-            "output": "broken clouds"
-          },
-          {
-            "input": [
-              {
-                "coord": {
-                  "lon": -74.006,
-                  "lat": 40.7143
-                },
-                "weather": [
-                  {
-                    "id": 800,
-                    "main": "Clear",
-                    "description": "clear sky",
-                    "icon": "01d"
-                  }
-                ],
-                "base": "stations",
-                "main": {
-                  "temp": 293.15,
-                  "feels_like": 293.34,
-                  "temp_min": 291.48,
-                  "temp_max": 294.82,
-                  "pressure": 1018,
-                  "humidity": 59
-                },
-                "visibility": 10000,
-                "wind": {
-                  "speed": 2.57,
-                  "deg": 230
-                },
-                "clouds": {
-                  "all": 0
-                },
-                "dt": 1697609100,
-                "sys": {
-                  "type": 1,
-                  "id": 3444,
-                  "country": "US",
-                  "sunrise": 1697559318,
-                  "sunset": 1697598579
-                },
-                "timezone": -14400,
-                "id": 5128581,
-                "name": "New York",
-                "cod": 200
-              }
-            ],
-            "output": "clear sky"
-          }
-        ]
-      },
-      {
-        "id": "a7ea7f38-20dd-4e22-ac2f-2aabbfe42d52",
-        "title": "프로미스 기반 피자 만들기",
-        "description": "피자 도우 준비, 토핑 완료, 굽기 완료 순서대로 프로미스를 사용하여 피자를 만드는 과정을 구현하세요. 각 단계는 `setTimeout`을 사용하여 비동기적으로 실행되어야 합니다. `makePizza` 함수는 프로미스를 반환하며, 각 단계가 완료될 때마다 콘솔에 메시지를 출력해야 합니다.",
-        "difficulty": "Medium",
-        "functionName": "makePizza",
-        "language": "javascript",
-        "starterCode": "function makePizza() {\n  // TODO: Implement the pizza making process using promises\n}",
-        "solution": "function makePizza() {\n  const pizza = () => {\n    return new Promise((resolve, reject) => {\n      resolve(\"피자를 주문합니다.\");\n    });\n  };\n  const step1 = (message) => {\n    console.log(message);\n    return new Promise((resolve, reject) => {\n      setTimeout(() => {\n        resolve('피자 도우 준비');\n      }, 1000);\n    });\n  };\n  const step2 = (message) => {\n    console.log(message);\n    return new Promise((resolve, reject) => {\n      setTimeout(() => {\n        resolve('토핑 완료');\n      }, 500);\n    });\n  };\n  const step3 = (message) => {\n    console.log(message);\n    return new Promise((resolve, reject) => {\n      setTimeout(() => {\n        resolve('굽기 완료');\n      }, 1000);\n    });\n  };\n  return pizza()\n    .then(step1)\n    .then(step2)\n    .then(step3)\n    .then(console.log)\n    .then(() => {\n      console.log('피자가 준비되었습니다. 🍕');\n    });\n}",
-        "samples": [
-          {
-            "input": [],
-            "output": null
-          }
-        ],
-        "tests": [
-          {
-            "input": [],
-            "output": null
-          }
-        ]
-      },
-      {
-        "id": "4a54fc8b-3767-4ce3-881c-a06f8bf8b82e",
-        "title": "Async/Await를 사용한 인사말",
-        "description": "좋아하는 주제를 반환하는 `getFavoriteSubject` 함수와 인사말을 반환하는 `createGreeting` 함수를 async/await를 사용하여 작성하세요. `greet` 함수는 `getFavoriteSubject`를 await하여 결과를 얻고, 그 결과를 `createGreeting`에 전달하여 최종 인사말을 콘솔에 출력해야 합니다.",
-        "difficulty": "Medium",
-        "functionName": "greet",
-        "language": "javascript",
-        "starterCode": "async function getFavoriteSubject() {\n  // TODO: Return a promise that resolves with a subject\n}\n\nasync function createGreeting(subject) {\n  // TODO: Return a promise that resolves with a greeting\n}\n\nasync function greet() {\n  // TODO: Implement the greeting process using async/await\n}",
-        "solution": "async function getFavoriteSubject() {\n  return \"JavaScript\";\n}\n\nasync function createGreeting(subject) {\n  return `Hello, ${subject}!`;\n}\n\nasync function greet() {\n  const subject = await getFavoriteSubject();\n  const greeting = await createGreeting(subject);\n  console.log(greeting);\n}",
-        "samples": [
-          {
-            "input": [],
-            "output": null
-          }
-        ],
-        "tests": [
-          {
-            "input": [],
-            "output": null
-          }
-        ]
-      },
-      {
         "id": "e16fc112-3e68-4b93-8c46-c4057b234090",
         "title": "async/await 를 사용한 좋아하는 과목 표시",
         "description": "async/await 를 사용하여 좋아하는 과목을 입력받고 'Hello, [과목]' 형태로 반환하는 함수를 만드세요.",
@@ -673,6 +321,135 @@
         "title": "Two Sum",
         "description": "정수 배열과 타겟이 주어졌을 때, 타겟에 합산되는 두 수의 인덱스를 반환하는 함수를 작성하세요.",
         "difficulty": "Easy",
+        "functionName": "solve",
+        "language": "javascript",
+        "starterCode": "function solve(nums, target) {\n  // TODO\n}",
+        "samples": [
+          {
+            "input": [
+              [
+                2,
+                7,
+                11,
+                15
+              ],
+              9
+            ],
+            "output": [
+              0,
+              1
+            ]
+          }
+        ],
+        "tests": [
+          {
+            "input": [
+              [
+                2,
+                7,
+                11,
+                15
+              ],
+              9
+            ],
+            "output": [
+              0,
+              1
+            ]
+          }
+        ]
+      },
+      {
+        "id": "8b187a7f-6b7e-47b7-bad0-c126fef6be1a",
+        "title": "Two Sum",
+        "description": "정수 배열과 타겟이 주어졌을 때, 타겟에 합산되는 두 수의 인덱스를 반환하는 함수를 작성하세요.",
+        "difficulty": "Easy",
+        "functionName": "solve",
+        "language": "javascript",
+        "starterCode": "function solve(nums, target) {\n  // TODO\n}",
+        "samples": [
+          {
+            "input": [
+              [
+                2,
+                7,
+                11,
+                15
+              ],
+              9
+            ],
+            "output": [
+              0,
+              1
+            ]
+          }
+        ],
+        "tests": [
+          {
+            "input": [
+              [
+                2,
+                7,
+                11,
+                15
+              ],
+              9
+            ],
+            "output": [
+              0,
+              1
+            ]
+          }
+        ]
+      },
+      {
+        "id": "bddf9849-d6b6-46ee-a299-d51b90dd2de1",
+        "title": "Two Sum",
+        "description": "정수 배열과 타겟이 주어졌을 때, 타겟에 합산되는 두 수의 인덱스를 반환하는 함수를 작성하세요.",
+        "difficulty": "Easy",
+        "functionName": "solve",
+        "language": "javascript",
+        "starterCode": "function solve(nums, target) {\n  // TODO\n}",
+        "samples": [
+          {
+            "input": [
+              [
+                2,
+                7,
+                11,
+                15
+              ],
+              9
+            ],
+            "output": [
+              0,
+              1
+            ]
+          }
+        ],
+        "tests": [
+          {
+            "input": [
+              [
+                2,
+                7,
+                11,
+                15
+              ],
+              9
+            ],
+            "output": [
+              0,
+              1
+            ]
+          }
+        ]
+      },
+      {
+        "id": "602a43ad-5110-4f94-8b3e-dbdc5ebc4edc",
+        "title": "Two Sum",
+        "description": "정수 배열과 타겟이 주어졌을 때, 타겟에 합산되는 두 수의 인덱스를 반환하는 함수를 작성하세요.",
+        "difficulty": "Hard",
         "functionName": "solve",
         "language": "javascript",
         "starterCode": "function solve(nums, target) {\n  // TODO\n}",

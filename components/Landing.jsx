@@ -6,6 +6,7 @@ import { useTheme } from '../ThemeContext.jsx';
 const Landing = () => {
   const navigate = useNavigate();
   const [me, setMe] = useState(null);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -16,8 +17,15 @@ const Landing = () => {
     })();
   }, []);
 
+  const handleNavigateToRooms = () => {
+    setIsTransitioning(true);
+    setTimeout(() => {
+      navigate('/rooms');
+    }, 300);
+  };
+
   return (
-    <div className="landing-page">
+    <div className={`landing-page ${isTransitioning ? 'page-transitioning' : ''}`}>
       {/* Top navigation */}
       <header className="landing-header">
         <div className="landing-header-content">
@@ -52,7 +60,7 @@ const Landing = () => {
           </p>
           <div className="landing-cta">
             <button
-              onClick={() => navigate('/rooms')}
+              onClick={handleNavigateToRooms}
               className="landing-btn-primary"
             >
               Start studying
@@ -86,7 +94,7 @@ const Landing = () => {
             </div>
             <div className="landing-prompt-action">
               <button
-                onClick={() => navigate('/rooms')}
+                onClick={handleNavigateToRooms}
                 className="landing-prompt-action-btn"
               >
                 Start building with JSC →
@@ -119,6 +127,13 @@ const LandingRightMenu = () => {
       } catch {}
     })();
   }, []);
+
+  const handleNavigateToRooms = () => {
+    setOpen(false);
+    setTimeout(() => {
+      navigate('/rooms');
+    }, 100);
+  };
 
   if (!me) {
     return (
@@ -177,7 +192,7 @@ const LandingRightMenu = () => {
           <div className="landing-dropdown-divider" />
           <button
             className="landing-dropdown-item"
-            onClick={() => navigate('/rooms')}
+            onClick={handleNavigateToRooms}
           >
             My Group
           </button>

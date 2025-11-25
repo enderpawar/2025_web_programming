@@ -4,6 +4,18 @@
   min-height: 100vh;
   background-color: var(--color-bg-dark);
   color: var(--color-text-primary);
+  animation: fadeInPage 0.4s ease;
+}
+
+@keyframes fadeInPage {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .rooms-filters-container {

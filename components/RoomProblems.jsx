@@ -196,53 +196,90 @@ const CreateProblemModal = ({ open, onClose, onCreate, roomId, onGenerateComplet
   return (
     <div className="modal-overlay" style={{ overflowY: 'auto', display: 'flex', alignItems: 'flex-start', paddingTop: '40px', paddingBottom: '40px' }}>
       <div className="modal-content create-problem-modal" style={{ margin: '0 auto', maxHeight: 'none' }}>
-        <h3 className="modal-title">{editMode ? 'Edit Problem' : 'Create Problem'}</h3>
+        <h3 className="modal-title" style={{ fontSize: '1.75rem', fontWeight: '700', marginBottom: '1.5rem' }}>
+          {editMode ? '문제 수정' : '문제 생성'}
+        </h3>
         {!editMode && (
-          <div style={{ marginBottom: 12 }}>
-            <input type="file" accept="application/pdf" onChange={(e)=>setPdfFile(e.target.files?.[0]||null)} />
+          <div className="pdf-upload-section">
+            <label className="pdf-upload-label">
+              <input 
+                type="file" 
+                accept="application/pdf" 
+                onChange={(e)=>setPdfFile(e.target.files?.[0]||null)}
+                className="pdf-file-input"
+              />
+              <div className="pdf-upload-box">
+                <span className="pdf-upload-icon">📄</span>
+                <span className="pdf-upload-text">
+                  {pdfFile ? pdfFile.name : 'PDF 파일 선택 (선택사항)'}
+                </span>
+                <span className="pdf-upload-hint">
+                  클릭하여 파일 선택
+                </span>
+              </div>
+            </label>
           </div>
         )}
         <div className="create-problem-form">
-          <input className="input" placeholder="Title" value={title} onChange={(e)=>setTitle(e.target.value)} />
+          <input className="input" placeholder="제목" value={title} onChange={(e)=>setTitle(e.target.value)} />
           <div className="form-row">
-            <input className="input" placeholder="Difficulty" value={difficulty} onChange={(e)=>setDifficulty(e.target.value)} />
-            <input className="input" placeholder="Function Name" value={functionName} onChange={(e)=>setFunctionName(e.target.value)} />
+            <div className="difficulty-select-wrapper">
+              <label className="difficulty-select-label">난이도</label>
+              <select 
+                className="difficulty-select" 
+                value={difficulty} 
+                onChange={(e)=>setDifficulty(e.target.value)}
+              >
+                <option value="Easy">⭐ Easy</option>
+                <option value="Normal">⚡ Normal</option>
+                <option value="Hard">🔥 Hard</option>
+              </select>
+            </div>
+            <div className="difficulty-select-wrapper">
+              <label className="difficulty-select-label">함수 이름 (문제 풀이 로직을 작성할 함수)</label>
+              <input 
+                className="input function-name-input" 
+                placeholder="solve" 
+                value={functionName} 
+                onChange={(e)=>setFunctionName(e.target.value)} 
+              />
+            </div>
           </div>
-          <textarea className="input form-textarea" placeholder="Description" value={description} onChange={(e)=>setDescription(e.target.value)} />
-          <textarea className="input form-code-textarea" placeholder="Starter Code" value={starterCode} onChange={(e)=>setStarterCode(e.target.value)} />
+          <textarea className="input form-textarea" placeholder="문제 설명" value={description} onChange={(e)=>setDescription(e.target.value)} />
+          <textarea className="input form-code-textarea" placeholder="시작 코드" value={starterCode} onChange={(e)=>setStarterCode(e.target.value)} />
           
           {/* Sample Test Cases */}
           <div style={{ marginTop: 16 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-              <label style={{ fontWeight: 600 }}>Sample Test Cases</label>
+              <label style={{ fontWeight: 600 }}>샘플 테스트 케이스</label>
               <button 
                 type="button"
                 className="btn btn-ghost"
                 style={{ padding: '4px 12px', fontSize: '14px' }}
                 onClick={() => setSamplePairs([...samplePairs, { input: '', output: '' }])}
               >
-                + Add Sample
+                + 샘플 추가
               </button>
             </div>
             {samplePairs.map((pair, idx) => (
               <div key={idx} style={{ marginBottom: 12, padding: 12, border: '1px solid #444', borderRadius: 8 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                  <span style={{ fontWeight: 500, color: '#60a5fa' }}>Sample {idx + 1}</span>
+                  <span style={{ fontWeight: 500, color: '#60a5fa' }}>샘플 {idx + 1}</span>
                   {samplePairs.length > 1 && (
                     <button
                       type="button"
                       onClick={() => setSamplePairs(samplePairs.filter((_, i) => i !== idx))}
                       style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: '14px' }}
                     >
-                      Remove
+                      삭제
                     </button>
                   )}
                 </div>
                 <div style={{ marginBottom: 8 }}>
-                  <label style={{ display: 'block', marginBottom: 4, fontSize: '14px', color: '#9ca3af' }}>Input</label>
+                  <label style={{ display: 'block', marginBottom: 4, fontSize: '14px', color: '#9ca3af' }}>입력 (JSON 형식)</label>
                   <textarea
                     className="input"
-                    placeholder="e.g., [[2,7,11,15],9]"
+                    placeholder="예: [[2,7,11,15],9]"
                     value={pair.input}
                     onChange={(e) => {
                       const newPairs = [...samplePairs];
@@ -253,10 +290,10 @@ const CreateProblemModal = ({ open, onClose, onCreate, roomId, onGenerateComplet
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', marginBottom: 4, fontSize: '14px', color: '#9ca3af' }}>Output</label>
+                  <label style={{ display: 'block', marginBottom: 4, fontSize: '14px', color: '#9ca3af' }}>출력 (JSON 형식)</label>
                   <textarea
                     className="input"
-                    placeholder="e.g., [0,1]"
+                    placeholder="예: [0,1]"
                     value={pair.output}
                     onChange={(e) => {
                       const newPairs = [...samplePairs];
@@ -273,35 +310,35 @@ const CreateProblemModal = ({ open, onClose, onCreate, roomId, onGenerateComplet
           {/* Hidden Test Cases */}
           <div style={{ marginTop: 16 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-              <label style={{ fontWeight: 600 }}>Hidden Test Cases</label>
+              <label style={{ fontWeight: 600 }}>히든 테스트 케이스</label>
               <button 
                 type="button"
                 className="btn btn-ghost"
                 style={{ padding: '4px 12px', fontSize: '14px' }}
                 onClick={() => setTestPairs([...testPairs, { input: '', output: '' }])}
               >
-                + Add Test
+                + 테스트 추가
               </button>
             </div>
             {testPairs.map((pair, idx) => (
               <div key={idx} style={{ marginBottom: 12, padding: 12, border: '1px solid #444', borderRadius: 8 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                  <span style={{ fontWeight: 500, color: '#60a5fa' }}>Test {idx + 1}</span>
+                  <span style={{ fontWeight: 500, color: '#60a5fa' }}>테스트 {idx + 1}</span>
                   {testPairs.length > 1 && (
                     <button
                       type="button"
                       onClick={() => setTestPairs(testPairs.filter((_, i) => i !== idx))}
                       style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: '14px' }}
                     >
-                      Remove
+                      삭제
                     </button>
                   )}
                 </div>
                 <div style={{ marginBottom: 8 }}>
-                  <label style={{ display: 'block', marginBottom: 4, fontSize: '14px', color: '#9ca3af' }}>Input</label>
+                  <label style={{ display: 'block', marginBottom: 4, fontSize: '14px', color: '#9ca3af' }}>입력 (JSON 형식)</label>
                   <textarea
                     className="input"
-                    placeholder="e.g., [[2,7,11,15],9]"
+                    placeholder="예: [[2,7,11,15],9]"
                     value={pair.input}
                     onChange={(e) => {
                       const newPairs = [...testPairs];
@@ -312,10 +349,10 @@ const CreateProblemModal = ({ open, onClose, onCreate, roomId, onGenerateComplet
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', marginBottom: 4, fontSize: '14px', color: '#9ca3af' }}>Output</label>
+                  <label style={{ display: 'block', marginBottom: 4, fontSize: '14px', color: '#9ca3af' }}>출력 (JSON 형식)</label>
                   <textarea
                     className="input"
-                    placeholder="e.g., [0,1]"
+                    placeholder="예: [0,1]"
                     value={pair.output}
                     onChange={(e) => {
                       const newPairs = [...testPairs];
@@ -332,7 +369,7 @@ const CreateProblemModal = ({ open, onClose, onCreate, roomId, onGenerateComplet
           {err && <div className="error-message">{err}</div>}
         </div>
         <div className="modal-footer">
-          <button className="btn btn-ghost" onClick={onClose}>Cancel</button>
+          <button className="btn btn-ghost" onClick={onClose}>취소</button>
           {!editMode && (
             <button
               className="btn btn-secondary"
@@ -353,7 +390,7 @@ const CreateProblemModal = ({ open, onClose, onCreate, roomId, onGenerateComplet
                   }
                 }catch(e){ setErr(e.message); setGenerating(false); }
               }}
-            >{generating ? 'Generating...' : 'Generate from PDF'}</button>
+            >{generating ? '생성 중...' : 'PDF에서 생성'}</button>
           )}
           <button className="btn btn-primary" onClick={()=>{
             try{
@@ -381,9 +418,9 @@ const CreateProblemModal = ({ open, onClose, onCreate, roomId, onGenerateComplet
               }
               onCreate(problemData);
             }catch(e){ 
-              setErr('Invalid JSON format in input/output fields. Please check your syntax.'); 
+              setErr('입력/출력 필드의 JSON 형식이 올바르지 않습니다. 문법을 확인하세요. (예: [[2,7,11,15],9])'); 
             }
-          }}>{editMode ? 'Update' : 'Create'}</button>
+          }}>{editMode ? '수정' : '생성'}</button>
         </div>
       </div>
     </div>

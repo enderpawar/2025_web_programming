@@ -6,6 +6,12 @@
   color: var(--color-text-primary);
   display: flex;
   flex-direction: column;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.landing-page.page-transitioning {
+  opacity: 0;
+  transform: scale(0.98);
 }
 
 /* Header */
@@ -74,6 +80,8 @@
   position: absolute;
   border-radius: 50%;
   filter: blur(72px);
+  opacity: 0.8;
+  transition: all 0.3s ease;
 }
 
 .landing-blob-1 {
@@ -81,7 +89,8 @@
   left: -6rem;
   width: 420px;
   height: 420px;
-  background-color: rgba(14, 165, 233, 0.1);
+  background: radial-gradient(circle, rgba(14, 165, 233, 0.15), rgba(14, 165, 233, 0.05));
+  animation: blob-float-1 20s ease-in-out infinite;
 }
 
 .landing-blob-2 {
@@ -89,7 +98,8 @@
   right: -6rem;
   width: 520px;
   height: 520px;
-  background-color: rgba(168, 85, 247, 0.1);
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.15), rgba(168, 85, 247, 0.05));
+  animation: blob-float-2 25s ease-in-out infinite;
 }
 
 .landing-blob-3 {
@@ -97,7 +107,64 @@
   left: 33.333%;
   width: 360px;
   height: 360px;
-  background-color: rgba(20, 184, 166, 0.1);
+  background: radial-gradient(circle, rgba(20, 184, 166, 0.15), rgba(20, 184, 166, 0.05));
+  animation: blob-float-3 18s ease-in-out infinite;
+}
+
+/* Blob animation keyframes */
+@keyframes blob-float-1 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+  }
+  25% {
+    transform: translate(30px, -40px) scale(1.1) rotate(90deg);
+  }
+  50% {
+    transform: translate(-20px, 30px) scale(0.9) rotate(180deg);
+  }
+  75% {
+    transform: translate(40px, 20px) scale(1.05) rotate(270deg);
+  }
+}
+
+@keyframes blob-float-2 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+  }
+  33% {
+    transform: translate(-40px, 50px) scale(1.08) rotate(120deg);
+  }
+  66% {
+    transform: translate(30px, -30px) scale(0.92) rotate(240deg);
+  }
+}
+
+@keyframes blob-float-3 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+  }
+  30% {
+    transform: translate(-30px, -25px) scale(1.12) rotate(108deg);
+  }
+  60% {
+    transform: translate(35px, 40px) scale(0.88) rotate(216deg);
+  }
+  90% {
+    transform: translate(-15px, 15px) scale(1.03) rotate(324deg);
+  }
+}
+
+/* Light mode blobs - slightly more visible */
+[data-theme="light"] .landing-blob-1 {
+  background: radial-gradient(circle, rgba(14, 165, 233, 0.12), rgba(14, 165, 233, 0.04));
+}
+
+[data-theme="light"] .landing-blob-2 {
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.12), rgba(168, 85, 247, 0.04));
+}
+
+[data-theme="light"] .landing-blob-3 {
+  background: radial-gradient(circle, rgba(20, 184, 166, 0.12), rgba(20, 184, 166, 0.04));
 }
 
 .landing-headline {
