@@ -1,0 +1,26 @@
+[
+  {
+    "id": "3f35d788-748b-4a84-95ac-f876c6814d83",
+    "email": "owner@owner",
+    "name": "Professor_Lee",
+    "password": "owner",
+    "role": "professor",
+    "createdAt": 1762823539538
+  },
+  {
+    "id": "59184366-ca56-4677-adbb-0191c5845887",
+    "email": "jinwoo@jinwoo",
+    "name": "이진우",
+    "password": "jinwoo",
+    "role": "student",
+    "createdAt": 1764040668477
+  },
+  {
+    "id": "e758406c-b53f-4f83-b617-47fbc665df8a",
+    "email": "test2@naver.com",
+    "name": "asdfasdf",
+    "password": "test",
+    "role": "student",
+    "createdAt": 1761619641472
+  }
+]

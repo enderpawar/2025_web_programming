@@ -10,7 +10,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "server": "node server/index.js",
-    "vercel-build": "vite build"
+    "vercel-build": "vite build",
+    "deploy": "npm run build && gh-pages -d dist"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -31,6 +32,7 @@
   "devDependencies": {
     "@vitejs/plugin-react": "^5.0.0",
     "concurrently": "^9.0.1",
+    "gh-pages": "^6.3.0",
     "nodemon": "^3.1.7",
     "vite": "^6.2.0"
   }

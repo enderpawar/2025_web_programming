@@ -115,17 +115,23 @@ const Rooms = () => {
   const [open, setOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
   const [me, setMe] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
       try {
+        setLoading(true);
         const who = await api.me();
         setMe(who);
         const list = await api.rooms();
-        setRooms(list);
+        console.log('Loaded rooms:', list);
+        setRooms(list || []);
       } catch (e) {
+        console.error('Failed to load:', e);
         // Not logged in
         setAuthOpen(true);
+      } finally {
+        setLoading(false);
       }
     })();
   }, []);
