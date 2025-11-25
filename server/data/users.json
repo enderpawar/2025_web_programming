@@ -52,5 +52,14 @@
     "role": "professor",
     "createdAt": 1762823539538,
     "isAdmin": false
+  },
+  {
+    "id": "59184366-ca56-4677-adbb-0191c5845887",
+    "email": "jinwoo@jinwoo",
+    "name": "이진우",
+    "passwordHash": "$2a$10$fpWyh3v8NwHGWzqj77NsPeXKekIY2cNisgPYgMPou5dgBWclQsMnq",
+    "role": "student",
+    "createdAt": 1764040668477,
+    "isAdmin": false
   }
 ]
