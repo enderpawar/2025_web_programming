@@ -17,7 +17,7 @@ export async function generateHint(problemTitle, problemDescription, currentCode
     
     const model = genAI.getGenerativeModel({ 
       model: "gemini-2.0-flash"
-    });    const prompt = `당신은 학생이 코딩 문제를 해결할 수 있도록 돕는 프로그래밍 튜터입니다.
+    });    const prompt = `당신은 알고리즘과 자료구조 전문가이자 프로그래밍 교육자입니다.
 
 문제: ${problemTitle}
 난이도: ${difficulty}
@@ -28,14 +28,16 @@ export async function generateHint(problemTitle, problemDescription, currentCode
 ${currentCode || '// 아직 코드 없음'}
 \`\`\`
 
-완전한 정답을 알려주지 않으면서 학생이 해결 방법을 찾을 수 있도록 유용한 힌트를 제공하세요.
-다음 사항에 집중하세요:
-1. 고려해야 할 핵심 개념이나 알고리즘
-2. 피해야 할 일반적인 함정
-3. 다음에 취할 수 있는 작은 단계
+학생이 문제를 해결할 수 있도록 전문적이고 구체적인 힌트를 제공하세요.
+다음 사항을 포함하여 답변하세요:
 
-힌트는 간결하게(2-3문장) 작성하고 격려하는 톤으로 작성하세요.
-반드시 한국어로 답변하세요.`;
+1. **핵심 알고리즘/자료구조**: 이 문제를 해결하는데 적합한 알고리즘이나 자료구조 (예: 해시맵, 투 포인터, 동적 프로그래밍 등)
+2. **시간/공간 복잡도**: 최적 솔루션의 예상 시간/공간 복잡도
+3. **구현 접근법**: 구체적인 구현 단계나 주의할 점
+4. **코드 개선점**: 현재 코드가 있다면 개선이 필요한 부분
+5. 코드 출력은 4~5줄 이내로 간결하게 제시
+직접적인 코드는 제공하지 말고, 학생이 스스로 구현할 수 있도록 개념과 방향을 명확히 제시하세요.
+전문 용어를 사용하되 이해하기 쉽게 설명하고, 반드시 한국어로 답변하세요.`;
 
     const result = await model.generateContent(prompt);
     const response = await result.response;

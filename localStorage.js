@@ -4,13 +4,24 @@ const STORAGE_KEYS = {
   ROOMS: 'jsc_rooms',
   CURRENT_USER: 'jsc_current_user',
   CODES: 'jsc_codes',
-  INITIALIZED: 'jsc_initialized'
+  INITIALIZED: 'jsc_initialized',
+  VERSION: 'jsc_version'
 };
+
+const CURRENT_VERSION = '1.1'; // 버전 업데이트 시 localStorage 강제 리셋
 
 let initPromise = null;
 
 // 초기 데이터 로드
 async function initializeStorage() {
+  // 버전 체크 - 버전이 다르면 완전 초기화
+  const storedVersion = localStorage.getItem(STORAGE_KEYS.VERSION);
+  if (storedVersion !== CURRENT_VERSION) {
+    console.log('Version mismatch. Resetting storage...', storedVersion, '->', CURRENT_VERSION);
+    localStorage.clear();
+    localStorage.setItem(STORAGE_KEYS.VERSION, CURRENT_VERSION);
+  }
+
   // 이미 초기화되었으면 스킵
   if (localStorage.getItem(STORAGE_KEYS.INITIALIZED)) {
     return;

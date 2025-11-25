@@ -21,6 +21,7 @@
         "functionName": "solve",
         "language": "javascript",
         "starterCode": "function solve(nums, target) {\n  // TODO\n}",
+        "solution": "function solve(nums, target) {\n  // 해시맵을 사용한 O(n) 솔루션\n  const map = new Map();\n  \n  for (let i = 0; i < nums.length; i++) {\n    const complement = target - nums[i];\n    \n    if (map.has(complement)) {\n      return [map.get(complement), i];\n    }\n    \n    map.set(nums[i], i);\n  }\n  \n  return [];\n}",
         "samples": [
           {
             "input": [[2, 7, 11, 15], 9],
