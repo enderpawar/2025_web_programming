@@ -83,6 +83,15 @@ export const api = {
     return localAPI.getAllUsers();
   },
 
+  // Gemini API 키 관리
+  setGeminiApiKey(apiKey) {
+    localAPI.setGeminiApiKey(apiKey);
+  },
+  
+  getGeminiApiKey() {
+    return localAPI.getGeminiApiKey();
+  },
+
   // 문제 관리
   async problems(roomId) {
     return localAPI.getProblems(roomId);
@@ -134,7 +143,20 @@ export const api = {
   async submitProblemSolution(roomId, problemId, code) {
     const problem = localAPI.getProblem(roomId, problemId);
     const result = localAPI.executeCode(code, problem.tests, problem.functionName);
-    return result;
+    
+    // passed 필드 추가
+    const passed = result.results.every(r => r.passed);
+    
+    return {
+      passed,
+      results: result.results.map((r, idx) => ({
+        pass: r.passed,
+        input: r.input,
+        expected: r.expected,
+        actual: r.actual,
+        error: r.error
+      }))
+    };
   },
 
   // AI 기능 (Gemini API)
@@ -171,25 +193,38 @@ export const api = {
 // PDF 텍스트 추출 헬퍼 함수
 async function extractTextFromPdf(arrayBuffer) {
   try {
-    // pdf-parse 라이브러리가 Node.js용이므로 브라우저에서는 간단한 방법 사용
-    // 실제로는 pdf.js를 사용해야 하지만, 여기서는 기본 구현
+    // pdfjs-dist 라이브러리 사용
+    const pdfjsLib = await import('pdfjs-dist');
     
-    // ArrayBuffer를 문자열로 변환 (간단한 텍스트 추출)
-    const uint8Array = new Uint8Array(arrayBuffer);
-    const decoder = new TextDecoder('utf-8');
-    let text = decoder.decode(uint8Array);
+    // Worker 설정 - 로컬 파일 사용
+    const workerSrc = new URL('pdfjs-dist/build/pdf.worker.min.mjs', import.meta.url).href;
+    pdfjsLib.GlobalWorkerOptions.workerSrc = workerSrc;
     
-    // PDF 바이너리에서 텍스트만 추출 (간단한 패턴)
-    text = text.replace(/[^\x20-\x7E\n]/g, ' ');
-    text = text.replace(/\s+/g, ' ').trim();
+    // PDF 로드
+    const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+    const pdf = await loadingTask.promise;
     
-    if (text.length < 100) {
-      throw new Error('PDF에서 충분한 텍스트를 추출하지 못했습니다');
+    let fullText = '';
+    
+    // 모든 페이지의 텍스트 추출
+    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+      const page = await pdf.getPage(pageNum);
+      const textContent = await page.getTextContent();
+      const pageText = textContent.items.map(item => item.str).join(' ');
+      fullText += pageText + '\n';
     }
     
-    return text;
+    // 텍스트 정리
+    fullText = fullText.replace(/\s+/g, ' ').trim();
+    
+    if (fullText.length < 100) {
+      throw new Error('PDF에서 충분한 텍스트를 추출하지 못했습니다. 텍스트가 포함된 PDF인지 확인해주세요.');
+    }
+    
+    console.log('PDF 텍스트 추출 성공:', fullText.substring(0, 200) + '...');
+    return fullText;
   } catch (error) {
     console.error('PDF 파싱 오류:', error);
-    throw new Error('PDF 파일 파싱에 실패했습니다. 텍스트 기반 PDF를 사용해주세요.');
+    throw new Error('PDF 파일 파싱에 실패했습니다. 텍스트 기반 PDF를 사용해주세요. (' + error.message + ')');
   }
 }

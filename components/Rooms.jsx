@@ -36,32 +36,75 @@ const Avatar = ({ logoUrl, title }) => {
   );
 };
 
-const RoomCard = ({ room, onClick, canDelete, onDelete }) => (
-  <div className="card room-card-flex">
-    <button
-      onClick={onClick}
-      className="room-card-button"
-    >
-      <Avatar logoUrl={room.logoUrl} title={room.name} />
-      <div className="room-card-info">
-        <div className="room-card-name">{room.name}</div>
-        <div className="room-card-author">{room.authorName}</div>
-        <div className="room-card-group">{room.groupName}</div>
+const RoomCard = ({ room, onClick, canDelete, onDelete, viewMode = 'list', index = 0 }) => {
+  if (viewMode === 'grid') {
+    return (
+      <div className="room-card-grid" style={{ animationDelay: `${index * 0.05}s` }}>
+        <button onClick={onClick} className="room-card-grid-button">
+          <div className="room-card-grid-header">
+            <Avatar logoUrl={room.logoUrl} title={room.name} />
+            {canDelete && (
+              <button
+                title="Delete room"
+                aria-label="Delete room"
+                onClick={(e) => { e.stopPropagation(); onDelete?.(); }}
+                className="room-card-delete-btn"
+              >
+                ×
+              </button>
+            )}
+          </div>
+          <div className="room-card-grid-body">
+            <div className="room-card-grid-name">{room.name}</div>
+            <div className="room-card-grid-author">👤 {room.authorName}</div>
+            <div className="room-card-grid-group">📁 {room.groupName}</div>
+            <div className="room-card-grid-stats">
+              <span className="room-card-stat">
+                <span className="room-card-stat-icon">📝</span>
+                <span>{room.problemCount || 0}</span>
+              </span>
+              <span className="room-card-stat">
+                <span className="room-card-stat-icon">👥</span>
+                <span>{room.members?.length || 0}</span>
+              </span>
+            </div>
+          </div>
+        </button>
       </div>
-      <div className="room-card-arrow">›</div>
-    </button>
-    {canDelete && (
+    );
+  }
+
+  return (
+    <div className="card room-card-flex">
       <button
-        title="Delete room"
-        aria-label="Delete room"
-        onClick={(e) => { e.stopPropagation(); onDelete?.(); }}
-        style={{ background: 'none', border: 'none', color: 'rgba(255, 255, 255, 0.5)', cursor: 'pointer', padding: '0.5rem', fontSize: '1rem' }}
+        onClick={onClick}
+        className="room-card-button"
       >
-        X
+        <Avatar logoUrl={room.logoUrl} title={room.name} />
+        <div className="room-card-info">
+          <div className="room-card-name">{room.name}</div>
+          <div className="room-card-author">{room.authorName}</div>
+          <div className="room-card-group">{room.groupName}</div>
+        </div>
+        <div className="room-card-stats-inline">
+          <span className="room-stat-badge">📝 {room.problemCount || 0}</span>
+          <span className="room-stat-badge">👥 {room.members?.length || 0}</span>
+        </div>
+        <div className="room-card-arrow">›</div>
       </button>
-    )}
-  </div>
-);
+      {canDelete && (
+        <button
+          title="Delete room"
+          aria-label="Delete room"
+          onClick={(e) => { e.stopPropagation(); onDelete?.(); }}
+          style={{ background: 'none', border: 'none', color: 'rgba(255, 255, 255, 0.5)', cursor: 'pointer', padding: '0.5rem', fontSize: '1rem' }}
+        >
+          X
+        </button>
+      )}
+    </div>
+  );
+};
 
 
 const CreateRoomModal = ({ open, onClose, onCreate }) => {
@@ -116,6 +159,8 @@ const Rooms = () => {
   const [authOpen, setAuthOpen] = useState(false);
   const [me, setMe] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [sortBy, setSortBy] = useState('latest');
+  const [viewMode, setViewMode] = useState('grid');
 
   useEffect(() => {
     (async () => {
@@ -140,12 +185,27 @@ const Rooms = () => {
     const r = filters.room.toLowerCase();
     const g = filters.group.toLowerCase();
     const a = filters.author.toLowerCase();
-    return rooms.filter((x) =>
+    let result = rooms.filter((x) =>
       (!r || x.name.toLowerCase().includes(r)) &&
       (!g || x.groupName.toLowerCase().includes(g)) &&
       (!a || x.authorName.toLowerCase().includes(a))
     );
-  }, [rooms, filters]);
+    
+    // 정렬
+    if (sortBy === 'latest') {
+      result.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+    } else if (sortBy === 'name') {
+      result.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (sortBy === 'members') {
+      result.sort((a, b) => {
+        const aCount = (a.members?.length || 0);
+        const bCount = (b.members?.length || 0);
+        return bCount - aCount;
+      });
+    }
+    
+    return result;
+  }, [rooms, filters, sortBy]);
 
   return (
     <div className="rooms-page">
@@ -179,14 +239,44 @@ const Rooms = () => {
         <PillInput placeholder="Author Name" value={filters.author} onChange={(v) => setFilters((s) => ({ ...s, author: v }))} />
       </div>
 
+      {/* Controls */}
+      <div className="rooms-controls">
+        <div className="rooms-controls-left">
+          <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="rooms-sort-select">
+            <option value="latest">최신순</option>
+            <option value="name">이름순</option>
+            <option value="members">참여자순</option>
+          </select>
+          <span className="rooms-count">{filtered.length}개의 방</span>
+        </div>
+        <div className="rooms-controls-right">
+          <button
+            onClick={() => setViewMode('list')}
+            className={`rooms-view-btn ${viewMode === 'list' ? 'active' : ''}`}
+            title="리스트 보기"
+          >
+            ☰
+          </button>
+          <button
+            onClick={() => setViewMode('grid')}
+            className={`rooms-view-btn ${viewMode === 'grid' ? 'active' : ''}`}
+            title="그리드 보기"
+          >
+            ⊞
+          </button>
+        </div>
+      </div>
+
       {/* Rooms list */}
-      <div className="rooms-list-container">
-        {filtered.map((room) => (
+      <div className={`rooms-list-container ${viewMode === 'grid' ? 'rooms-grid-view' : ''}`}>
+        {filtered.map((room, index) => (
           <RoomCard
             key={room.id}
             room={room}
             onClick={() => navigate(`/rooms/${room.id}/problems`)}
             canDelete={me && me.id === room.ownerId}
+            viewMode={viewMode}
+            index={index}
             onDelete={async () => {
               const ok = confirm('이 방과 모든 문제 및 코드를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.');
               if (!ok) return;

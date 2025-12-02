@@ -1,12 +1,17 @@
 // Gemini AI 기능 (프론트엔드에서 직접 호출)
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { localAPI } from './localStorage.js';
 
 // API 키 가져오기 함수
 function getApiKey() {
-  // 환경변수에서만 키 확인
+  // 1. localStorage에서 먼저 확인
+  const storedKey = localAPI.getGeminiApiKey();
+  if (storedKey) return storedKey;
+  
+  // 2. 환경변수 확인
   if (import.meta.env.VITE_GEMINI_API_KEY) return import.meta.env.VITE_GEMINI_API_KEY;
   
-  throw new Error('Gemini API 키가 설정되지 않았습니다. .env 파일에 VITE_GEMINI_API_KEY를 설정해주세요.');
+  throw new Error('Gemini API 키가 설정되지 않았습니다. Profile > API Setting에서 API 키를 입력해주세요.');
 }
 
 // AI 힌트 생성
@@ -57,62 +62,95 @@ export async function generateProblemsFromPdfText(pdfText) {
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
     
-    const prompt = `당신은 프로그래밍 문제 생성 전문가입니다. 다음 PDF에서 추출한 텍스트를 **반드시 분석하고**, 그 내용과 **직접적으로 관련된** JavaScript 코딩 문제를 **1개만** 생성하세요.
+    // PDF 텍스트가 너무 길면 앞부분만 사용 (토큰 제한)
+    const maxLength = 8000;
+    const truncatedText = pdfText.length > maxLength ? pdfText.substring(0, maxLength) + '...' : pdfText;
+    
+    console.log('PDF 텍스트 길이:', pdfText.length);
+    console.log('PDF 텍스트 미리보기:', truncatedText.substring(0, 500));
+    
+    const prompt = `당신은 프로그래밍 교육 전문가입니다. 다음 PDF/문서에서 추출한 텍스트를 **정확히 분석**하고, 그 내용과 **직접 관련된** JavaScript 코딩 문제를 생성하세요.
 
-PDF 내용:
-${pdfText}
+PDF/문서 내용:
+"""
+${truncatedText}
+"""
 
-**중요: PDF 내용을 반드시 읽고 이해한 후, 그 내용과 관련된 문제를 만드세요. PDF와 무관한 일반적인 문제는 절대 만들지 마세요.**
+**분석 지침:**
+1. 위 텍스트에서 다루는 주요 알고리즘, 자료구조, 프로그래밍 개념을 파악하세요
+2. 예제 코드가 있다면 그것을 바탕으로 유사한 문제를 만드세요
+3. 문서의 난이도를 고려하여 적절한 난이도의 문제를 생성하세요
 
-다음 JSON 형식으로 **정확히 1개의** 코딩 문제를 생성하세요:
+**금지 사항:**
+- PDF 파일 크기 계산 같은 메타 정보 문제는 절대 만들지 마세요
+- 문서 내용과 무관한 일반적인 문제는 만들지 마세요
+- 문서에서 다루지 않은 개념의 문제는 만들지 마세요
+
+다음 JSON 형식으로 **정확히 1개의** 문제를 생성하세요:
+
 [
   {
-    "title": "PDF 내용과 관련된 구체적인 문제 제목 (한국어)",
-    "description": "PDF에서 다룬 개념/알고리즘/주제를 활용하는 명확한 문제 설명 (한국어, PDF 내용 언급)",
+    "title": "문서에서 다룬 개념을 활용한 구체적인 문제 제목 (한국어)",
+    "description": "문서의 핵심 개념을 적용하는 명확한 문제 설명. 반드시 '이 문제는 [문서에서 다룬 개념]을 활용합니다' 형태로 시작하세요. (한국어)",
     "difficulty": "Easy|Medium|Hard",
     "functionName": "solve",
-    "starterCode": "function solve(param1, param2) {\\n  // TODO: 여기에 코드를 작성하세요\\n  // PDF에서 설명한 [개념/알고리즘]을 활용하세요\\n}",
-    "solution": "function solve(param1, param2) {\\n  // PDF에서 설명한 [개념] 활용\\n  // 단계별 구현\\n  \\n  // 예: [알고리즘 설명]\\n  \\n  return result;\\n}",
+    "starterCode": "function solve(param1, param2) {\\n  // TODO: 여기에 코드를 작성하세요\\n  // [문서의 핵심 개념]을 활용하세요\\n}",
+    "solution": "function solve(param1, param2) {\\n  // [문서 개념] 기반 솔루션\\n  \\n  return result;\\n}",
     "samples": [
       {
-        "input": [값1, 값2],
-        "output": 예상출력
+        "input": ["실제 예시 값1", "값2"],
+        "output": "예상 결과"
       }
     ],
     "tests": [
       {
-        "input": [값1, 값2],
-        "output": 예상출력
+        "input": ["테스트 값1", "값2"],
+        "output": "예상 결과"
       },
       {
-        "input": [값3, 값4],
-        "output": 예상출력2
+        "input": ["테스트 값3", "값4"],
+        "output": "예상 결과2"
+      },
+      {
+        "input": ["엣지 케이스"],
+        "output": "결과3"
       }
     ]
   }
 ]
 
-생성 규칙:
-- **PDF 내용과 직접 관련된 문제만 생성** (예: PDF가 정렬 알고리즘이면 정렬 문제, 그래프면 그래프 문제)
-- 정확히 **1개의 문제만** 배열에 포함
-- description에 "PDF에서 다룬 [개념]을 활용하여..." 등 PDF 내용 명시
-- solution에 주석으로 PDF 개념과의 연관성 설명
-- 모든 텍스트는 **한국어**로 작성
-- 최소 2-3개의 테스트 케이스 포함
+**필수 요구사항:**
+- JSON 형식만 반환 (추가 설명 없이)
+- 문제는 반드시 문서 내용과 직접 연관
+- description 첫 문장에 문서 개념 명시
+- 최소 3개의 다양한 테스트 케이스
+- 모든 텍스트는 한국어
 
-**JSON 배열만 반환하고, 추가 설명은 포함하지 마세요.**`;
+JSON만 반환하세요:`;
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const text = response.text();
     
+    console.log('Gemini 응답:', text);
+    
     // JSON 추출 (코드 블록 제거)
-    const jsonMatch = text.match(/\[[\s\S]*\]/);
+    let jsonMatch = text.match(/\[[\s\S]*\]/);
     if (!jsonMatch) {
+      // ```json으로 감싸진 경우
+      const codeBlockMatch = text.match(/```json\s*([\s\S]*?)\s*```/);
+      if (codeBlockMatch) {
+        jsonMatch = [codeBlockMatch[1]];
+      }
+    }
+    
+    if (!jsonMatch) {
+      console.error('JSON 파싱 실패. 응답:', text);
       throw new Error('올바른 JSON 형식을 찾을 수 없습니다');
     }
     
     const problems = JSON.parse(jsonMatch[0]);
+    console.log('생성된 문제:', problems);
     return problems;
   } catch (error) {
     console.error('Gemini API error:', error);

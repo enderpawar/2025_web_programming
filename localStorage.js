@@ -5,7 +5,8 @@ const STORAGE_KEYS = {
   CURRENT_USER: 'jsc_current_user',
   CODES: 'jsc_codes',
   INITIALIZED: 'jsc_initialized',
-  VERSION: 'jsc_version'
+  VERSION: 'jsc_version',
+  GEMINI_API_KEY: 'jsc_gemini_api_key'
 };
 
 const CURRENT_VERSION = '1.1'; // 버전 업데이트 시 localStorage 강제 리셋
@@ -191,7 +192,12 @@ export const localAPI = {
 
   // 룸 목록
   getRooms() {
-    return getRooms();
+    const rooms = getRooms();
+    // 각 룸에 문제 개수 추가
+    return rooms.map(room => ({
+      ...room,
+      problemCount: (room.problems || []).length
+    }));
   },
 
   // 특정 룸 조회
@@ -398,6 +404,16 @@ export const localAPI = {
     return codes[key]?.code || '';
   },
 
+  // Gemini API 키 설정
+  setGeminiApiKey(apiKey) {
+    localStorage.setItem(STORAGE_KEYS.GEMINI_API_KEY, apiKey);
+  },
+
+  // Gemini API 키 조회
+  getGeminiApiKey() {
+    return localStorage.getItem(STORAGE_KEYS.GEMINI_API_KEY) || '';
+  },
+
   // 코드 실행
   executeCode(code, testCases, functionName = 'solve') {
     const results = [];
@@ -422,7 +438,9 @@ export const localAPI = {
           throw new Error(`${functionName} is not a function`);
         }
         
-        const result = func(...tc.input);
+        // 입력값이 배열이면 spread, 아니면 그대로 전달
+        const input = Array.isArray(tc.input) ? tc.input : [tc.input];
+        const result = func(...input);
         const passed = JSON.stringify(result) === JSON.stringify(tc.output);
         
         results.push({

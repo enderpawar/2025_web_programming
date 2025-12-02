@@ -218,13 +218,65 @@ const RoomCompiler = () => {
     window.console.error = customConsole.error;
     window.console.warn = customConsole.warn;
     window.console.info = customConsole.info;
+    
     try {
       newOutput.push({ type: OutputType.INFO, message: 'Executing code...' });
-      const result = new Function(code)();
-      if (result !== undefined) {
-        newOutput.push({ type: OutputType.LOG, message: `Return value: ${JSON.stringify(result, null, 2)}` });
+      
+      // 문제가 있고 샘플 테스트 케이스가 있으면 자동으로 실행
+      if (problem && Array.isArray(problem.samples) && problem.samples.length > 0) {
+        const functionName = problem.functionName || 'solve';
+        
+        try {
+          // 함수 추출
+          const func = new Function(`
+            ${code}
+            return ${functionName};
+          `)();
+          
+          if (typeof func !== 'function') {
+            throw new Error(`${functionName} is not a function`);
+          }
+          
+          newOutput.push({ type: OutputType.INFO, message: `Running ${problem.samples.length} sample test case(s)...` });
+          
+          // 각 샘플 테스트 케이스 실행
+          problem.samples.forEach((sample, idx) => {
+            try {
+              const input = Array.isArray(sample.input) ? sample.input : [sample.input];
+              const result = func(...input);
+              const passed = JSON.stringify(result) === JSON.stringify(sample.output);
+              
+              if (passed) {
+                newOutput.push({ 
+                  type: OutputType.SUCCESS, 
+                  message: `✓ Sample ${idx + 1}: Passed\n  Input: ${JSON.stringify(sample.input)}\n  Output: ${JSON.stringify(result)}` 
+                });
+              } else {
+                newOutput.push({ 
+                  type: OutputType.ERROR, 
+                  message: `✗ Sample ${idx + 1}: Failed\n  Input: ${JSON.stringify(sample.input)}\n  Expected: ${JSON.stringify(sample.output)}\n  Got: ${JSON.stringify(result)}` 
+                });
+              }
+            } catch (err) {
+              newOutput.push({ 
+                type: OutputType.ERROR, 
+                message: `✗ Sample ${idx + 1}: Error\n  ${err.message}` 
+              });
+            }
+          });
+          
+          newOutput.push({ type: OutputType.SUCCESS, message: 'Execution finished.' });
+        } catch (err) {
+          newOutput.push({ type: OutputType.ERROR, message: err.message });
+        }
+      } else {
+        // 문제가 없거나 샘플이 없으면 기존 방식대로 실행
+        const result = new Function(code)();
+        if (result !== undefined) {
+          newOutput.push({ type: OutputType.LOG, message: `Return value: ${JSON.stringify(result, null, 2)}` });
+        }
+        newOutput.push({ type: OutputType.SUCCESS, message: 'Execution finished.' });
       }
-      newOutput.push({ type: OutputType.SUCCESS, message: 'Execution finished.' });
     } catch (error) {
       if (error instanceof Error) newOutput.push({ type: OutputType.ERROR, message: error.message });
       else newOutput.push({ type: OutputType.ERROR, message: String(error) });
@@ -233,7 +285,7 @@ const RoomCompiler = () => {
       setOutput(newOutput);
       setIsRunning(false);
     }
-  }, [code]);
+  }, [code, problem]);
 
   const handleClearConsole = useCallback(() => setOutput([]), []);
 
@@ -574,7 +626,13 @@ const RoomCompiler = () => {
           title="드래그하여 패널 크기 조정"
         />
         <div className="compiler-center-panel">
-          <Editor code={code} setCode={setCode} onRun={handleRunCode} isRunning={isRunning} />
+          <Editor 
+            code={code} 
+            setCode={setCode} 
+            onRun={handleRunCode} 
+            isRunning={isRunning}
+            problem={problem}
+          />
         </div>
         <div 
           className="panel-resizer" 

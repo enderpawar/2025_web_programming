@@ -98,15 +98,6 @@ const Console = ({ output, onClear, problem, code, onCustomTest, addOutput }) =>
       <div className="console-tabs">
         <div className="console-tab console-tab-active">Console</div>
         <div className="editor-actions" style={{marginLeft: 'auto', display: 'flex', gap: '0.5rem'}}>
-          {problem && (
-            <button
-              onClick={() => setShowCustomTest(!showCustomTest)}
-              className="btn console-custom-test-btn"
-              style={{backgroundColor: '#10b981'}}
-            >
-              {showCustomTest ? '✕ Close Test' : '🧪 Custom Test'}
-            </button>
-          )}
           <button
             onClick={onClear}
             className="btn console-custom-test-btn"

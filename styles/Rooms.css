@@ -18,6 +18,89 @@
   }
 }
 
+/* Controls */
+.rooms-controls {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 0 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.rooms-controls-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.rooms-controls-right {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.rooms-sort-select {
+  padding: 0.5rem 1rem;
+  background-color: var(--color-bg-darker);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  color: var(--color-text-primary);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.rooms-sort-select:hover {
+  border-color: var(--color-border-focus);
+}
+
+.rooms-sort-select:focus {
+  outline: none;
+  border-color: var(--color-border-focus);
+}
+
+.rooms-count {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+.rooms-view-btn {
+  padding: 0.5rem 0.75rem;
+  background-color: var(--color-bg-darker);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  color: var(--color-text-muted);
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.rooms-view-btn:hover {
+  border-color: var(--color-border-focus);
+  color: var(--color-text-primary);
+}
+
+.rooms-view-btn.active {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+}
+
+/* Light mode controls */
+[data-theme="light"] .rooms-sort-select,
+[data-theme="light"] .rooms-view-btn {
+  background-color: white;
+  border-color: rgba(0, 0, 0, 0.2);
+  color: var(--color-text-primary);
+}
+
+[data-theme="light"] .rooms-view-btn.active {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+}
+
 .rooms-filters-container {
   max-width: 72rem;
   margin: 0 auto;
@@ -140,9 +223,167 @@
   color: var(--color-text-dim);
 }
 
+.room-card-stats-inline {
+  display: flex;
+  gap: 0.5rem;
+  margin-right: 1rem;
+}
+
+.room-stat-badge {
+  padding: 0.25rem 0.625rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+[data-theme="light"] .room-stat-badge {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
 .room-card-arrow {
   color: rgba(255, 255, 255, 0.3);
   font-size: 1.5rem;
+}
+
+/* Grid View */
+.rooms-grid-view {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .rooms-grid-view {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  }
+}
+
+.room-card-grid {
+  background-color: var(--color-bg-darker);
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: fadeInUp 0.5s ease both;
+  position: relative;
+}
+
+.room-card-grid::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-secondary), var(--color-primary));
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.room-card-grid:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+  border-color: var(--color-border-focus);
+}
+
+.room-card-grid:hover::before {
+  opacity: 1;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.room-card-grid-button {
+  width: 100%;
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 1.5rem;
+  text-align: left;
+}
+
+.room-card-grid-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.room-card-delete-btn {
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 0.375rem;
+  color: #ef4444;
+  font-size: 1.25rem;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  line-height: 1;
+}
+
+.room-card-delete-btn:hover {
+  background-color: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.5);
+}
+
+.room-card-grid-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.room-card-grid-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.room-card-grid-author,
+.room-card-grid-group {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+.room-card-grid-stats {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.room-card-stat {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.room-card-stat-icon {
+  font-size: 1rem;
+}
+
+/* Light mode grid cards */
+[data-theme="light"] .room-card-grid {
+  background-color: white;
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .room-card-grid:hover {
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
 }
 
 /* Checkbox */

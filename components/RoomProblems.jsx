@@ -3,8 +3,57 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { api } from '../api.js';
 import ThemeToggleButton from './ThemeToggleButton.jsx';
 
-const ProblemCard = ({ problem, onClick, canDelete, onDelete, onEdit }) => {
+const ProblemCard = ({ problem, onClick, canDelete, onDelete, onEdit, viewMode = 'grid', index = 0 }) => {
   const [showMenu, setShowMenu] = useState(false);
+  
+  if (viewMode === 'grid') {
+    return (
+      <div className="problem-card-grid-wrapper" style={{ animationDelay: `${index * 0.05}s` }}>
+        <div className="problem-card-grid">
+          <button onClick={onClick} className="problem-card-grid-button">
+            <div className="problem-card-grid-header">
+              <div className="problem-card-grid-icon">
+                {problem.difficulty?.[0]?.toUpperCase() || 'P'}
+              </div>
+              <div className={`problem-card-grid-difficulty problem-card-difficulty-${problem.difficulty?.toLowerCase() || 'easy'}`}>
+                {problem.difficulty || 'Easy'}
+              </div>
+            </div>
+            <div className="problem-card-grid-body">
+              <div className="problem-card-grid-title">{problem.title}</div>
+              <div className="problem-card-grid-meta">
+                <span>🔧 {problem.functionName || 'solve'}</span>
+              </div>
+            </div>
+          </button>
+          {canDelete && problem.id !== 'legacy' && (
+            <div className="problem-card-grid-actions">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit?.();
+                }}
+                className="problem-card-grid-action-btn problem-card-grid-edit-btn"
+                title="수정하기"
+              >
+                ✏️
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete?.(e);
+                }}
+                className="problem-card-grid-action-btn problem-card-grid-delete-btn"
+                title="삭제하기"
+              >
+                🗑️
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
   
   return (
     <div style={{ marginBottom: '12px' }}>
@@ -561,6 +610,7 @@ const RoomProblems = () => {
   const [me, setMe] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [editingProblem, setEditingProblem] = useState(null);
+  const [viewMode, setViewMode] = useState('grid');
 
   useEffect(() => {
     (async () => {
@@ -598,14 +648,34 @@ const RoomProblems = () => {
         </div>
       </header>
       <div className="room-problems-container">
-        <div className="room-problems-title">{room?.name || 'Room'}</div>
-        <div className="problems-list">
-          {problems.map((p) => (
+        <div className="room-problems-header-section">
+          <div className="room-problems-title">{room?.name || 'Room'}</div>
+          <div className="room-problems-view-controls">
+            <button
+              onClick={() => setViewMode('list')}
+              className={`room-problems-view-btn ${viewMode === 'list' ? 'active' : ''}`}
+              title="리스트 보기"
+            >
+              ☰
+            </button>
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`room-problems-view-btn ${viewMode === 'grid' ? 'active' : ''}`}
+              title="그리드 보기"
+            >
+              ⊞
+            </button>
+          </div>
+        </div>
+        <div className={`problems-list ${viewMode === 'grid' ? 'problems-list-grid' : ''}`}>
+          {problems.map((p, index) => (
             <ProblemCard
               key={p.id}
               problem={p}
               onClick={()=>navigate(`/rooms/${roomId}/problems/${p.id}`)}
               canDelete={me && room && me.id === room.ownerId}
+              viewMode={viewMode}
+              index={index}
               onEdit={()=>{
                 setEditingProblem(p);
                 setEditMode(true);
