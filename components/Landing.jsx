@@ -216,7 +216,7 @@ const Landing = () => {
             <StepCard
               number="3"
               title="코딩 시작"
-              description="솔루션을 작성하고, AI 힐트를 받고, 코드를 즉시 테스트하세요"
+              description="솔루션을 작성하고, AI 힌트를 받고, 코드를 즉시 테스트하세요"
             />
             <StepCard
               number="4"
@@ -515,8 +515,10 @@ const FeatureCard = ({ icon, title, description }) => {
 const StepCard = ({ number, title, description }) => {
   return (
     <div className="landing-step-card">
-      <div className="landing-step-number">{number}</div>
-      <h3 className="landing-step-title">{title}</h3>
+      <div className="landing-step-header">
+        <div className="landing-step-number">{number}</div>
+        <h3 className="landing-step-title">{title}</h3>
+      </div>
       <p className="landing-step-description">{description}</p>
     </div>
   );
