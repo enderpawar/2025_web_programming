@@ -394,20 +394,26 @@ export const localAPI = {
     setRooms(rooms);
   },
 
-  // 코드 저장
-  saveCode(roomId, problemId, code) {
+  // 코드 저장 (테스트 통과 여부 포함)
+  saveCode(roomId, problemId, code, passed = false) {
     const currentUser = getCurrentUser();
     if (!currentUser) throw new Error('로그인이 필요합니다');
 
     const codes = getCodes();
     const key = `${currentUser.id}-${roomId}-${problemId}`;
     
+    // 기존 데이터가 있으면 passed 상태를 유지 (한 번이라도 통과했으면 계속 통과로 유지)
+    const existingData = codes[key];
+    const existingPassed = existingData?.passed === true;
+    
     codes[key] = {
       code,
+      passed: existingPassed ? true : passed, // 기존에 통과했으면 무조건 true 유지, 아니면 새 passed 값 사용
       updatedAt: Date.now()
     };
 
     setCodes(codes);
+    console.log(`[saveCode] Saved code for ${key}, passed:`, codes[key].passed);
   },
 
   // 코드 불러오기
@@ -419,6 +425,75 @@ export const localAPI = {
     const key = `${currentUser.id}-${roomId}-${problemId}`;
     
     return codes[key]?.code || '';
+  },
+
+  // 룸의 학생 진행도 계산 (owner 제외)
+  getRoomProgress(roomId) {
+    const room = this.getRoom(roomId);
+    const codes = getCodes();
+    
+    // 전체 멤버 수 - 1 (owner 제외) = 학생 수
+    const totalStudents = Math.max(0, room.members.length - 1);
+    
+    if (totalStudents === 0) {
+      return { completedStudents: 0, totalStudents: 0, percentage: 0 };
+    }
+    
+    const totalProblems = (room.problems || []).length;
+    if (totalProblems === 0) {
+      return { completedStudents: 0, totalStudents, percentage: 0 };
+    }
+    
+    // owner를 제외한 학생들
+    const students = room.members.filter(memberId => memberId !== room.ownerId);
+    
+    // 각 학생이 최소 1개 이상의 문제를 풀었는지 확인 (테스트 통과 기준)
+    let completedStudents = 0;
+    students.forEach(studentId => {
+      let solvedCount = 0;
+      
+      room.problems.forEach(problem => {
+        const key = `${studentId}-${roomId}-${problem.id}`;
+        const codeData = codes[key];
+        
+        // 테스트를 통과한 경우만 풀이한 것으로 간주
+        if (codeData && codeData.passed === true) {
+          solvedCount++;
+        }
+      });
+      
+      console.log(`[getRoomProgress] Student ${studentId} solved ${solvedCount}/${totalProblems} problems`);
+      
+      // 최소 1개 이상의 문제를 풀었으면 완료한 학생으로 카운트
+      if (solvedCount > 0) {
+        completedStudents++;
+      }
+    });
+    
+    const percentage = totalStudents > 0 ? Math.round((completedStudents / totalStudents) * 100) : 0;
+    console.log(`[getRoomProgress] Room ${roomId}: ${completedStudents}/${totalStudents} students completed (${percentage}%)`);
+    
+    return {
+      completedStudents,
+      totalStudents,
+      percentage
+    };
+  },
+
+  // 특정 문제가 완료되었는지 확인 (현재 로그인한 사용자 기준)
+  isProblemCompleted(roomId, problemId) {
+    const currentUser = getCurrentUser();
+    if (!currentUser) {
+      console.log('[isProblemCompleted] No current user');
+      return false;
+    }
+    
+    const codes = getCodes();
+    const key = `${currentUser.id}-${roomId}-${problemId}`;
+    const codeData = codes[key];
+    
+    console.log('[isProblemCompleted]', { roomId, problemId, userId: currentUser.id, key, codeData, passed: codeData?.passed });
+    return codeData && codeData.passed === true;
   },
 
   // Gemini API 키 설정
@@ -457,8 +532,11 @@ export const localAPI = {
         
         // 입력값이 배열이면 spread, 아니면 그대로 전달
         const input = Array.isArray(tc.input) ? tc.input : [tc.input];
+        console.log('[executeCode] Input:', input, 'Expected:', tc.output);
         const result = func(...input);
+        console.log('[executeCode] Actual result:', result);
         const passed = JSON.stringify(result) === JSON.stringify(tc.output);
+        console.log('[executeCode] Passed:', passed, 'Expected:', JSON.stringify(tc.output), 'Got:', JSON.stringify(result));
         
         results.push({
           passed,
@@ -467,6 +545,7 @@ export const localAPI = {
           actual: result
         });
       } catch (error) {
+        console.error('[executeCode] Error:', error.message);
         results.push({
           passed: false,
           input: tc.input,
@@ -476,6 +555,7 @@ export const localAPI = {
       }
     }
 
+    console.log('[executeCode] Final results:', results);
     return { results };
   }
 };

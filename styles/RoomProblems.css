@@ -129,9 +129,52 @@
   background-color: var(--color-bg-darker);
   border: 1px solid var(--color-border);
   border-radius: 0.75rem;
-  overflow: hidden;
+  overflow: visible;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
+}
+
+/* Complete Badge */
+.problem-completed-badge {
+  position: absolute;
+  top: -12px;
+  right: -8px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  animation: completeBadgeAppear 0.5s ease;
+}
+
+.problem-completed-badge-list {
+  top: -8px;
+  right: 8px;
+}
+
+@keyframes completeBadgeAppear {
+  0% {
+    opacity: 0;
+    transform: scale(0.5) rotate(-10deg);
+  }
+  50% {
+    transform: scale(1.1) rotate(5deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+[data-theme="light"] .problem-completed-badge {
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
 .problem-card-grid::before {

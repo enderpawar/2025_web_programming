@@ -129,8 +129,8 @@ export const api = {
     return { code };
   },
   
-  async saveProblemCode(roomId, problemId, code) {
-    localAPI.saveCode(roomId, problemId, code);
+  async saveProblemCode(roomId, problemId, code, passed = false) {
+    localAPI.saveCode(roomId, problemId, code, passed);
     return { message: 'Code saved' };
   },
 
@@ -183,6 +183,15 @@ export const api = {
     }
     
     return { problems: createdProblems };
+  },
+
+  // 진행도 추적
+  getRoomProgress(roomId) {
+    return localAPI.getRoomProgress(roomId);
+  },
+  
+  isProblemCompleted(roomId, problemId) {
+    return localAPI.isProblemCompleted(roomId, problemId);
   },
 
   // 하위 호환성

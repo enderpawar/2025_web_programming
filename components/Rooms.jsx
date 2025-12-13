@@ -36,23 +36,23 @@ const Avatar = ({ logoUrl, title }) => {
   );
 };
 
-const RoomCard = ({ room, onClick, canDelete, onDelete, viewMode = 'list', index = 0 }) => {
+const RoomCard = ({ room, onClick, canDelete, onDelete, viewMode = 'list', index = 0, progress }) => {
   if (viewMode === 'grid') {
     return (
       <div className="room-card-grid" style={{ animationDelay: `${index * 0.05}s` }}>
+        {canDelete && (
+          <button
+            title="Delete room"
+            aria-label="Delete room"
+            onClick={(e) => { e.stopPropagation(); onDelete?.(); }}
+            className="room-card-delete-btn"
+          >
+            ×
+          </button>
+        )}
         <button onClick={onClick} className="room-card-grid-button">
           <div className="room-card-grid-header">
             <Avatar logoUrl={room.logoUrl} title={room.name} />
-            {canDelete && (
-              <button
-                title="Delete room"
-                aria-label="Delete room"
-                onClick={(e) => { e.stopPropagation(); onDelete?.(); }}
-                className="room-card-delete-btn"
-              >
-                ×
-              </button>
-            )}
           </div>
           <div className="room-card-grid-body">
             <div className="room-card-grid-name">{room.name}</div>
@@ -68,6 +68,24 @@ const RoomCard = ({ room, onClick, canDelete, onDelete, viewMode = 'list', index
                 <span>{room.members?.length || 0}</span>
               </span>
             </div>
+            {progress && (
+              <div className="room-progress-section">
+                <div className="room-progress-label">
+                  <span className="room-progress-icon">✅</span>
+                  <span className="room-progress-text">
+                    {progress.completedStudents}/{Math.max(0, (room.members?.length || 1) - 1)} 학생이 학습 완료했습니다
+                  </span>
+                </div>
+                <div className="room-progress-bar-container">
+                  <div 
+                    className="room-progress-bar-fill" 
+                    style={{ width: `${Math.max(0, (room.members?.length || 1) - 1) === 0 ? 0 : Math.round((progress.completedStudents / Math.max(0, (room.members?.length || 1) - 1)) * 100)}%` }}
+                  >
+                    <span className="room-progress-percentage">{Math.max(0, (room.members?.length || 1) - 1) === 0 ? 0 : Math.round((progress.completedStudents / Math.max(0, (room.members?.length || 1) - 1)) * 100)}%</span>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </button>
       </div>
@@ -85,6 +103,21 @@ const RoomCard = ({ room, onClick, canDelete, onDelete, viewMode = 'list', index
           <div className="room-card-name">{room.name}</div>
           <div className="room-card-author">{room.authorName}</div>
           <div className="room-card-group">{room.groupName}</div>
+          {progress && (
+            <div className="room-progress-inline">
+              <span className="room-progress-icon">✅</span>
+              <span className="room-progress-text">
+                {progress.completedStudents}/{progress.totalStudents} 완료
+              </span>
+              <div className="room-progress-bar-mini">
+                <div 
+                  className="room-progress-bar-fill-mini" 
+                  style={{ width: `${progress.percentage}%` }}
+                />
+              </div>
+              <span className="room-progress-percentage-mini">{progress.percentage}%</span>
+            </div>
+          )}
         </div>
         <div className="room-card-stats-inline">
           <span className="room-stat-badge">📝 {room.problemCount || 0}</span>
@@ -162,6 +195,8 @@ const Rooms = () => {
   const [sortBy, setSortBy] = useState('latest');
   const [viewMode, setViewMode] = useState('grid');
 
+  const [roomProgress, setRoomProgress] = useState({});
+
   useEffect(() => {
     (async () => {
       try {
@@ -171,6 +206,18 @@ const Rooms = () => {
         const list = await api.rooms();
         console.log('Loaded rooms:', list);
         setRooms(list || []);
+        
+        // 각 룸의 진행도 계산
+        const progressData = {};
+        list.forEach(room => {
+          try {
+            progressData[room.id] = api.getRoomProgress(room.id);
+          } catch (e) {
+            console.error(`Failed to get progress for room ${room.id}:`, e);
+            progressData[room.id] = { completedStudents: 0, totalStudents: 0, percentage: 0 };
+          }
+        });
+        setRoomProgress(progressData);
       } catch (e) {
         console.error('Failed to load:', e);
         // Not logged in
@@ -277,6 +324,7 @@ const Rooms = () => {
             canDelete={me && me.id === room.ownerId}
             viewMode={viewMode}
             index={index}
+            progress={roomProgress[room.id]}
             onDelete={async () => {
               const ok = confirm('이 방과 모든 문제 및 코드를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.');
               if (!ok) return;

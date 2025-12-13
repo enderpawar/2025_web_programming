@@ -316,7 +316,8 @@ const RoomCompiler = () => {
   const save = useCallback(async () => {
     setSaving(true);
     try {
-      await api.saveProblemCode(roomId, problemId, code);
+      // 수동 저장은 테스트 통과를 보장하지 않으므로 passed=false
+      await api.saveProblemCode(roomId, problemId, code, false);
       setSavedAt(Date.now());
     } catch (e) {
       alert(e.message);
@@ -329,8 +330,19 @@ const RoomCompiler = () => {
     setTestResults(null);
     try {
       const res = await api.submitProblemSolution(roomId, problemId, code);
+      console.log('[runTests] Test result:', res);
       setTestResults(res);
+      
+      // 테스트를 통과했으면 자동으로 저장 (passed = true)
+      if (res.passed) {
+        console.log('[runTests] All tests passed! Saving with passed=true');
+        await api.saveProblemCode(roomId, problemId, code, true);
+        setSavedAt(Date.now());
+      } else {
+        console.log('[runTests] Tests failed, not auto-saving');
+      }
     } catch (e) {
+      console.error('[runTests] Error:', e);
       setTestResults({ passed: false, results: [], error: e.message });
     }
   }, [roomId, problemId, code]);

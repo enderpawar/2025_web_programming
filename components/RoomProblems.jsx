@@ -3,13 +3,26 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { api } from '../api.js';
 import ThemeToggleButton from './ThemeToggleButton.jsx';
 
-const ProblemCard = ({ problem, onClick, canDelete, onDelete, onEdit, viewMode = 'grid', index = 0 }) => {
-  const [showMenu, setShowMenu] = useState(false);
+const ProblemCard = ({ problem, onClick, canDelete, onDelete, onEdit, viewMode = 'grid', index = 0, roomId }) => {
+  const [showMenu, setShowMenu] = useState(false);  const [isCompleted, setIsCompleted] = useState(false);
   
+  // Check if problem is completed
+  useEffect(() => {
+    if (roomId && problem.id) {
+      const completed = api.isProblemCompleted(roomId, problem.id);
+      console.log(`Problem ${problem.id} in room ${roomId} completed:`, completed);
+      setIsCompleted(completed);
+    }
+  }, [roomId, problem.id]);  
   if (viewMode === 'grid') {
     return (
       <div className="problem-card-grid-wrapper" style={{ animationDelay: `${index * 0.05}s` }}>
-        <div className="problem-card-grid">
+        <div className="problem-card-grid" style={{ position: 'relative' }}>
+          {isCompleted && (
+            <div className="problem-completed-badge">
+              ✓ COMPLETE!
+            </div>
+          )}
           <button onClick={onClick} className="problem-card-grid-button">
             <div className="problem-card-grid-header">
               <div className="problem-card-grid-icon">
@@ -56,7 +69,12 @@ const ProblemCard = ({ problem, onClick, canDelete, onDelete, onEdit, viewMode =
   }
   
   return (
-    <div style={{ marginBottom: '12px' }}>
+    <div style={{ marginBottom: '12px', position: 'relative' }}>
+      {isCompleted && (
+        <div className="problem-completed-badge problem-completed-badge-list">
+          ✓ COMPLETE!
+        </div>
+      )}
       <div className="problem-card">
         <button onClick={onClick} className="problem-card-button">
           <div className="problem-card-icon">
@@ -672,6 +690,7 @@ const RoomProblems = () => {
             <ProblemCard
               key={p.id}
               problem={p}
+              roomId={roomId}
               onClick={()=>navigate(`/rooms/${roomId}/problems/${p.id}`)}
               canDelete={me && room && me.id === room.ownerId}
               viewMode={viewMode}
