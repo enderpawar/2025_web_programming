@@ -227,6 +227,26 @@ const RoomCompiler = () => {
         const functionName = problem.functionName || 'solve';
         
         try {
+          // 부동 소수점 비교를 위한 헬퍼 함수
+          const deepEqual = (a, b, epsilon = 1e-10) => {
+            if (typeof a === 'number' && typeof b === 'number') {
+              if (Number.isNaN(a) && Number.isNaN(b)) return true;
+              if (!Number.isFinite(a) || !Number.isFinite(b)) return a === b;
+              return Math.abs(a - b) < epsilon;
+            }
+            if (Array.isArray(a) && Array.isArray(b)) {
+              if (a.length !== b.length) return false;
+              return a.every((item, i) => deepEqual(item, b[i], epsilon));
+            }
+            if (typeof a === 'object' && typeof b === 'object' && a !== null && b !== null) {
+              const keysA = Object.keys(a);
+              const keysB = Object.keys(b);
+              if (keysA.length !== keysB.length) return false;
+              return keysA.every(key => deepEqual(a[key], b[key], epsilon));
+            }
+            return a === b;
+          };
+
           // 함수 추출
           const func = new Function(`
             ${code}
@@ -244,7 +264,7 @@ const RoomCompiler = () => {
             try {
               const input = Array.isArray(sample.input) ? sample.input : [sample.input];
               const result = func(...input);
-              const passed = JSON.stringify(result) === JSON.stringify(sample.output);
+              const passed = deepEqual(result, sample.output);
               
               if (passed) {
                 newOutput.push({ 

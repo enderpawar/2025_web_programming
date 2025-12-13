@@ -10,6 +10,16 @@ const Landing = () => {
   const [apiModalOpen, setApiModalOpen] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
+  // Mouse tracking for interactive effects
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      setMousePos({ x: e.clientX, y: e.clientY });
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -69,6 +79,15 @@ const Landing = () => {
       <div className="scroll-progress-bar" style={{ width: `${scrollProgress}%` }} />
       
       <div className={`landing-page ${isTransitioning ? 'page-transitioning' : ''} ${apiModalOpen ? 'landing-page-blurred' : ''}`}>
+        {/* Mouse spotlight effect */}
+        <div 
+          className="mouse-spotlight" 
+          style={{ 
+            left: mousePos.x, 
+            top: mousePos.y 
+          }} 
+        />
+        
         {/* Top navigation */}
         <header className="landing-header">
         <div className="landing-header-content">
@@ -168,8 +187,8 @@ const Landing = () => {
           <div className="landing-features-grid">
             <FeatureCard
               icon="🤖"
-              title="AI 기반 힐트"
-              description="Gemini AI가 제공하는 지능형 힐트로 정답을 알려주지 않고 문제 해결을 도와드립니다"
+              title="AI 기반 힌트"
+              description="Gemini AI가 제공하는 지능형 힌트로 정답을 알려주지 않고 문제 해결을 도와드립니다"
             />
             <FeatureCard
               icon="📄"
@@ -207,21 +226,25 @@ const Landing = () => {
               number="1"
               title="회원가입 & 룸 생성"
               description="계정을 만들고 몇 초 안에 첫 번째 스터디 룸을 설정하세요"
+              gifUrl="/gifs/step1-signup.gif"
             />
             <StepCard
               number="2"
               title="문제 추가"
               description="PDF를 업로드하거나, 커스텀 문제를 만들거나, 기존 문제를 선택하세요"
+              gifUrl="/gifs/step2-add-problem.gif"
             />
             <StepCard
               number="3"
               title="코딩 시작"
               description="솔루션을 작성하고, AI 힌트를 받고, 코드를 즉시 테스트하세요"
+              gifUrl="/gifs/step3-coding.gif"
             />
             <StepCard
               number="4"
               title="진행도 확인"
               description="솔루션을 검토하고 시간이 지남에 따른 개선 사항을 모니터링하세요"
+              gifUrl="/gifs/step4-progress.gif"
             />
           </div>
         </section>
@@ -390,7 +413,7 @@ const LandingApiModal = ({ apiModalOpen, setApiModalOpen }) => {
           Gemini API 키를 입력하세요. <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" style={{color: '#3b82f6', textDecoration: 'underline'}}>API 키 발급받기</a>
         </p>
         <input
-          type="text"
+          type="password"
           className="api-modal-input"
           placeholder="AIza..."
           value={apiKey}
@@ -500,10 +523,36 @@ const StatsCounter = ({ end, suffix = '', label, duration = 2000 }) => {
   );
 };
 
-// Feature Card Component
+// Feature Card Component with 3D tilt effect
 const FeatureCard = ({ icon, title, description }) => {
+  const cardRef = React.useRef(null);
+  
+  const handleMouseMove = (e) => {
+    if (!cardRef.current) return;
+    const card = cardRef.current;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = (y - centerY) / 10;
+    const rotateY = (centerX - x) / 10;
+    
+    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(10px)`;
+  };
+  
+  const handleMouseLeave = () => {
+    if (!cardRef.current) return;
+    cardRef.current.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateZ(0)';
+  };
+  
   return (
-    <div className="landing-feature-card">
+    <div 
+      ref={cardRef}
+      className="landing-feature-card"
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+    >
       <div className="landing-feature-icon">{icon}</div>
       <h3 className="landing-feature-title">{title}</h3>
       <p className="landing-feature-description">{description}</p>
@@ -512,7 +561,7 @@ const FeatureCard = ({ icon, title, description }) => {
 };
 
 // Step Card Component
-const StepCard = ({ number, title, description }) => {
+const StepCard = ({ number, title, description, gifUrl }) => {
   return (
     <div className="landing-step-card">
       <div className="landing-step-header">
@@ -520,6 +569,16 @@ const StepCard = ({ number, title, description }) => {
         <h3 className="landing-step-title">{title}</h3>
       </div>
       <p className="landing-step-description">{description}</p>
+      {gifUrl && (
+        <div className="landing-step-gif-container">
+          <img 
+            src={gifUrl} 
+            alt={`${title} 예시`}
+            className="landing-step-gif"
+            loading="lazy"
+          />
+        </div>
+      )}
     </div>
   );
 };

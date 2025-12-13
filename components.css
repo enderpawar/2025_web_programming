@@ -471,15 +471,73 @@ body {
 }
 
 .logo {
-  color: var(--color-primary-hover);
   font-weight: 800;
   letter-spacing: 0.1em;
   font-size: 1.25rem;
   cursor: pointer;
+  background: linear-gradient(135deg, #14b8a6 0%, #5eead4 50%, #14b8a6 100%);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: logo-gradient-flow 3s ease infinite;
+  position: relative;
+  display: inline-block;
+  filter: drop-shadow(0 0 20px rgba(20, 184, 166, 0.6));
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes logo-gradient-flow {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.logo::before {
+  content: 'JSC';
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: -1;
+  filter: blur(15px);
+  background: linear-gradient(135deg, #14b8a6 0%, #5eead4 50%, #14b8a6 100%);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  opacity: 0.8;
+  animation: logo-gradient-flow 3s ease infinite;
 }
 
 .logo:hover {
-  opacity: 0.9;
+  filter: drop-shadow(0 0 30px rgba(20, 184, 166, 0.9));
+}
+
+/* Light mode logo */
+[data-theme="light"] .logo {
+  background: linear-gradient(135deg, #0d9488 0%, #0f766e 50%, #0d9488 100%);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 10px rgba(13, 148, 136, 0.3));
+  animation: logo-gradient-flow 3s ease infinite;
+}
+
+[data-theme="light"] .logo::before {
+  background: linear-gradient(135deg, #0d9488 0%, #0f766e 50%, #0d9488 100%);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: logo-gradient-flow 3s ease infinite;
+}
+
+[data-theme="light"] .logo:hover {
+  filter: drop-shadow(0 0 15px rgba(13, 148, 136, 0.5));
 }
 
 /* ========================================
