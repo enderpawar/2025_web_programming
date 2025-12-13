@@ -5,16 +5,22 @@
 ## 📸 주요 화면
 
 ### Landing Page
+<img width="3839" height="1977" alt="image" src="https://github.com/user-attachments/assets/98a4fa2f-bc3e-4962-b4bd-cbdc24deb594" />
+
 - 플랫폼 소개 및 사용 가이드를 제공하는 메인 페이지입니다.
 
 <details>
   <summary>Landing Page 세부 기능 소개(클릭)</summary>
 
 1. **인터랙티브 GIF 미리보기**
+<img width="3839" height="1845" alt="image" src="https://github.com/user-attachments/assets/b9eb46f6-04e0-4578-9be0-a88f0d4b9324" />
+
+
    - 각 사용 단계 카드에 마우스를 올리면 GIF가 재생됩니다.
    - 카드를 클릭하면 전체 화면 모달로 확대하여 볼 수 있습니다.
 
 2. **다크모드 / 라이트모드 토글**
+
    - 사용자 선호에 따라 테마를 전환할 수 있습니다.
    - 설정은 localStorage에 저장되어 다음 방문 시에도 유지됩니다.
 
