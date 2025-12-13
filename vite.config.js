@@ -32,7 +32,7 @@ export default defineConfig(({ mode }) => {
   };
   
   return {
-    base: '/2025_web_programming/',
+    base: mode === 'production' ? '/2025_web_programming/' : '/',
     server: {
       port: 3000,
       host: '0.0.0.0',
