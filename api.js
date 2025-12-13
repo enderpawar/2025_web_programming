@@ -198,6 +198,10 @@ export const api = {
     return localAPI.isProblemCompleted(roomId, problemId);
   },
 
+  getStudentCode(studentId, roomId, problemId) {
+    return localAPI.getStudentCode(studentId, roomId, problemId);
+  },
+
   // 하위 호환성
   token: '',
   API_URL: '',

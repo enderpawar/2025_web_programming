@@ -532,6 +532,19 @@ export const localAPI = {
     return codeData && codeData.passed === true;
   },
 
+  // 특정 학생의 특정 문제 코드 가져오기 (교수용)
+  getStudentCode(studentId, roomId, problemId) {
+    const codes = getCodes();
+    const key = `${studentId}-${roomId}-${problemId}`;
+    const codeData = codes[key];
+    
+    return codeData ? {
+      code: codeData.code,
+      passed: codeData.passed,
+      updatedAt: codeData.updatedAt
+    } : null;
+  },
+
   // Gemini API 키 설정
   setGeminiApiKey(apiKey) {
     localStorage.setItem(STORAGE_KEYS.GEMINI_API_KEY, apiKey);

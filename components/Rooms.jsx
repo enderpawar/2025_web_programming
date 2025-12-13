@@ -188,8 +188,61 @@ const CreateRoomModal = ({ open, onClose, onCreate }) => {
   );
 };
 
+const StudentCodeModal = ({ open, onClose, studentName, problemTitle, code, passed, updatedAt }) => {
+  if (!open) return null;
+
+  return (
+    <div className="modal-overlay" onClick={onClose} style={{ zIndex: 10000 }}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '900px', width: '90vw' }}>
+        <h3 className="modal-title">{studentName}의 코드 - {problemTitle}</h3>
+        <div style={{ marginBottom: '16px', display: 'flex', gap: '12px', alignItems: 'center' }}>
+          <span style={{
+            padding: '6px 12px',
+            borderRadius: '6px',
+            fontSize: '13px',
+            fontWeight: '600',
+            background: passed ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)',
+            color: passed ? '#10b981' : '#ef4444'
+          }}>
+            {passed ? '✅ 테스트 통과' : '❌ 미완료'}
+          </span>
+          {updatedAt && (
+            <span style={{ fontSize: '13px', color: '#9ca3af' }}>
+              마지막 수정: {new Date(updatedAt).toLocaleString('ko-KR')}
+            </span>
+          )}
+        </div>
+        <div style={{ 
+          background: 'var(--color-bg-darker)', 
+          border: '1px solid var(--color-border)',
+          borderRadius: '8px',
+          padding: '16px',
+          maxHeight: '500px',
+          overflowY: 'auto'
+        }}>
+          <pre style={{ 
+            margin: 0, 
+            fontFamily: 'monospace',
+            fontSize: '14px',
+            lineHeight: '1.6',
+            whiteSpace: 'pre-wrap',
+            wordBreak: 'break-word'
+          }}>
+            {code || '작성된 코드가 없습니다.'}
+          </pre>
+        </div>
+        <div className="modal-footer">
+          <button className="btn btn-primary" onClick={onClose}>닫기</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const StudentProgressModal = ({ open, onClose, roomId, roomName }) => {
   const [students, setStudents] = useState([]);
+  const [codeModalOpen, setCodeModalOpen] = useState(false);
+  const [selectedCode, setSelectedCode] = useState(null);
 
   useEffect(() => {
     if (open && roomId) {
@@ -198,73 +251,134 @@ const StudentProgressModal = ({ open, onClose, roomId, roomName }) => {
     }
   }, [open, roomId]);
 
+  const handleProblemClick = (student, problem) => {
+    const codeData = api.getStudentCode(student.studentId, roomId, problem.problemId);
+    setSelectedCode({
+      studentName: student.studentName,
+      problemTitle: problem.problemTitle,
+      code: codeData?.code || '',
+      passed: codeData?.passed || false,
+      updatedAt: codeData?.updatedAt
+    });
+    setCodeModalOpen(true);
+  };
+
   if (!open) return null;
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '800px' }}>
-        <h3 className="modal-title">학생별 진행 상황 - {roomName}</h3>
-        <div style={{ maxHeight: '500px', overflowY: 'auto' }}>
-          {students.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '40px', color: '#9ca3af' }}>
-              초대된 학생이 없습니다
-            </div>
-          ) : (
-            students.map((student) => (
-              <div key={student.studentId} style={{
-                background: 'var(--color-bg-darker)',
-                border: '1px solid var(--color-border)',
-                borderRadius: '12px',
-                padding: '20px',
-                marginBottom: '16px'
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                  <div>
-                    <div style={{ fontSize: '18px', fontWeight: '600', color: 'var(--color-text-primary)' }}>
-                      {student.studentName}
-                    </div>
-                    <div style={{ fontSize: '14px', color: '#9ca3af' }}>
-                      {student.studentEmail}
-                    </div>
-                  </div>
-                  <div style={{
-                    background: student.percentage === 100 ? 'linear-gradient(135deg, #10b981, #059669)' : 'var(--color-bg-dark)',
-                    padding: '8px 16px',
-                    borderRadius: '20px',
-                    fontWeight: '700',
-                    fontSize: '14px'
-                  }}>
-                    {student.completedCount}/{student.totalProblems} 완료 ({student.percentage}%)
-                  </div>
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '8px', marginTop: '12px' }}>
-                  {student.problems.map((problem) => (
-                    <div key={problem.problemId} style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      padding: '8px 12px',
-                      background: problem.completed ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
-                      border: `1px solid ${problem.completed ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`,
-                      borderRadius: '8px',
-                      fontSize: '13px'
-                    }}>
-                      <span>{problem.completed ? '✅' : '❌'}</span>
-                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {problem.problemTitle}
-                      </span>
-                    </div>
-                  ))}
-                </div>
+    <>
+      <div className="modal-overlay" onClick={onClose}>
+        <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '800px' }}>
+          <h3 className="modal-title">학생별 진행 상황 - {roomName}</h3>
+          <div style={{ maxHeight: '500px', overflowY: 'auto' }}>
+            {students.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '40px', color: '#9ca3af' }}>
+                초대된 학생이 없습니다
               </div>
-            ))
-          )}
-        </div>
-        <div className="modal-footer">
-          <button className="btn btn-primary" onClick={onClose}>닫기</button>
+            ) : (
+              students.map((student) => (
+                <div key={student.studentId} style={{
+                  background: 'var(--color-bg-darker)',
+                  border: '1px solid var(--color-border)',
+                  borderRadius: '12px',
+                  padding: '20px',
+                  marginBottom: '16px'
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                    <div>
+                      <div style={{ fontSize: '18px', fontWeight: '600', color: 'var(--color-text-primary)' }}>
+                        {student.studentName}
+                      </div>
+                      <div style={{ fontSize: '14px', color: '#9ca3af' }}>
+                        {student.studentEmail}
+                      </div>
+                    </div>
+                    <div style={{
+                      background: student.percentage === 100 ? 'linear-gradient(135deg, #10b981, #059669)' : 'var(--color-bg-dark)',
+                      padding: '8px 16px',
+                      borderRadius: '20px',
+                      fontWeight: '700',
+                      fontSize: '14px'
+                    }}>
+                      {student.completedCount}/{student.totalProblems} 완료 ({student.percentage}%)
+                    </div>
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '8px', marginTop: '12px' }}>
+                    {student.problems.map((problem) => (
+                      <div 
+                        key={problem.problemId} 
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          gap: '8px',
+                          padding: '8px 12px',
+                          background: problem.completed ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+                          border: `1px solid ${problem.completed ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`,
+                          borderRadius: '8px',
+                          fontSize: '13px'
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1, minWidth: 0 }}>
+                          <span>{problem.completed ? '✅' : '❌'}</span>
+                          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {problem.problemTitle}
+                          </span>
+                        </div>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleProblemClick(student, problem);
+                          }}
+                          style={{
+                            padding: '4px 10px',
+                            background: 'rgba(59, 130, 246, 0.2)',
+                            border: '1px solid rgba(59, 130, 246, 0.4)',
+                            borderRadius: '6px',
+                            color: '#3b82f6',
+                            fontSize: '12px',
+                            fontWeight: '600',
+                            cursor: 'pointer',
+                            whiteSpace: 'nowrap',
+                            transition: 'all 0.2s'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.target.style.background = 'rgba(59, 130, 246, 0.3)';
+                            e.target.style.transform = 'translateY(-1px)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.target.style.background = 'rgba(59, 130, 246, 0.2)';
+                            e.target.style.transform = 'translateY(0)';
+                          }}
+                        >
+                          📝 코드 보기
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+          <div className="modal-footer">
+            <button className="btn btn-primary" onClick={onClose}>닫기</button>
+          </div>
         </div>
       </div>
-    </div>
+
+      <StudentCodeModal
+        open={codeModalOpen}
+        onClose={() => {
+          setCodeModalOpen(false);
+          setSelectedCode(null);
+        }}
+        studentName={selectedCode?.studentName}
+        problemTitle={selectedCode?.problemTitle}
+        code={selectedCode?.code}
+        passed={selectedCode?.passed}
+        updatedAt={selectedCode?.updatedAt}
+      />
+    </>
   );
 };
 
