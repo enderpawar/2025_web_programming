@@ -11,6 +11,8 @@ const Landing = () => {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [stepModalOpen, setStepModalOpen] = useState(false);
+  const [selectedStep, setSelectedStep] = useState(null);
 
   // Mouse tracking for interactive effects
   useEffect(() => {
@@ -226,25 +228,65 @@ const Landing = () => {
               number="1"
               title="회원가입 & 룸 생성"
               description="계정을 만들고 몇 초 안에 첫 번째 스터디 룸을 설정하세요"
-              gifUrl="/gifs/step1-signup.gif"
+              thumbnailUrl={`${import.meta.env.BASE_URL}gifs/step1-signup.jpg`}
+              gifUrl={`${import.meta.env.BASE_URL}gifs/step1-signup.gif`}
+              onClick={() => {
+                setSelectedStep({
+                  number: "1",
+                  title: "회원가입 & 룸 생성",
+                  description: "계정을 만들고 몇 초 안에 첫 번째 스터디 룸을 설정하세요",
+                  gifUrl: `${import.meta.env.BASE_URL}gifs/step1-signup.gif`
+                });
+                setStepModalOpen(true);
+              }}
             />
             <StepCard
               number="2"
               title="문제 추가"
               description="PDF를 업로드하거나, 커스텀 문제를 만들거나, 기존 문제를 선택하세요"
-              gifUrl="/gifs/step2-add-problem.gif"
+              thumbnailUrl={`${import.meta.env.BASE_URL}gifs/step2-add-problem.jpg`}
+              gifUrl={`${import.meta.env.BASE_URL}gifs/step2-add-problem.gif`}
+              onClick={() => {
+                setSelectedStep({
+                  number: "2",
+                  title: "문제 추가",
+                  description: "PDF를 업로드하거나, 커스텀 문제를 만들거나, 기존 문제를 선택하세요",
+                  gifUrl: `${import.meta.env.BASE_URL}gifs/step2-add-problem.gif`
+                });
+                setStepModalOpen(true);
+              }}
             />
             <StepCard
               number="3"
               title="코딩 시작"
               description="솔루션을 작성하고, AI 힌트를 받고, 코드를 즉시 테스트하세요"
-              gifUrl="/gifs/step3-coding.gif"
+              thumbnailUrl={`${import.meta.env.BASE_URL}gifs/step3-coding.jpg`}
+              gifUrl={`${import.meta.env.BASE_URL}gifs/step3-coding.gif`}
+              onClick={() => {
+                setSelectedStep({
+                  number: "3",
+                  title: "코딩 시작",
+                  description: "솔루션을 작성하고, AI 힌트를 받고, 코드를 즉시 테스트하세요",
+                  gifUrl: `${import.meta.env.BASE_URL}gifs/step3-coding.gif`
+                });
+                setStepModalOpen(true);
+              }}
             />
             <StepCard
               number="4"
               title="진행도 확인"
               description="솔루션을 검토하고 시간이 지남에 따른 개선 사항을 모니터링하세요"
-              gifUrl="/gifs/step4-progress.gif"
+              thumbnailUrl={`${import.meta.env.BASE_URL}gifs/step4-progress.jpg`}
+              gifUrl={`${import.meta.env.BASE_URL}gifs/step4-progress.gif`}
+              onClick={() => {
+                setSelectedStep({
+                  number: "4",
+                  title: "진행도 확인",
+                  description: "솔루션을 검토하고 시간이 지남에 따른 개선 사항을 모니터링하세요",
+                  gifUrl: `${import.meta.env.BASE_URL}gifs/step4-progress.gif`
+                });
+                setStepModalOpen(true);
+              }}
             />
           </div>
         </section>
@@ -267,6 +309,18 @@ const Landing = () => {
       <LandingApiModal 
         apiModalOpen={apiModalOpen} 
         setApiModalOpen={setApiModalOpen} 
+      />
+
+      <StepModal
+        open={stepModalOpen}
+        onClose={() => {
+          setStepModalOpen(false);
+          setSelectedStep(null);
+        }}
+        number={selectedStep?.number}
+        title={selectedStep?.title}
+        description={selectedStep?.description}
+        gifUrl={selectedStep?.gifUrl}
       />
     </>
   );
@@ -561,24 +615,122 @@ const FeatureCard = ({ icon, title, description }) => {
 };
 
 // Step Card Component
-const StepCard = ({ number, title, description, gifUrl }) => {
+const StepCard = ({ number, title, description, gifUrl, thumbnailUrl, onClick }) => {
+  const [isHovered, setIsHovered] = React.useState(false);
+
   return (
-    <div className="landing-step-card">
+    <div 
+      className="landing-step-card"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onClick={onClick}
+      style={{ cursor: 'pointer' }}
+    >
       <div className="landing-step-header">
         <div className="landing-step-number">{number}</div>
         <h3 className="landing-step-title">{title}</h3>
       </div>
       <p className="landing-step-description">{description}</p>
-      {gifUrl && (
+      {(gifUrl || thumbnailUrl) && (
         <div className="landing-step-gif-container">
           <img 
-            src={gifUrl} 
+            src={isHovered ? gifUrl : thumbnailUrl} 
             alt={`${title} 예시`}
             className="landing-step-gif"
             loading="lazy"
           />
         </div>
       )}
+    </div>
+  );
+};
+
+const StepModal = ({ open, onClose, number, title, description, gifUrl }) => {
+  if (!open) return null;
+
+  return (
+    <div className="modal-overlay" onClick={onClose} style={{ zIndex: 9999 }}>
+      <div 
+        className="modal-content" 
+        onClick={(e) => e.stopPropagation()}
+        style={{ 
+          maxWidth: '1200px', 
+          width: '90vw',
+          maxHeight: '90vh',
+          overflow: 'auto'
+        }}
+      >
+        <button
+          onClick={onClose}
+          style={{
+            position: 'absolute',
+            top: '20px',
+            right: '20px',
+            background: 'rgba(255, 255, 255, 0.1)',
+            border: 'none',
+            borderRadius: '50%',
+            width: '40px',
+            height: '40px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            fontSize: '24px',
+            color: 'var(--color-text-primary)',
+            transition: 'all 0.2s'
+          }}
+          onMouseEnter={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.2)'}
+          onMouseLeave={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.1)'}
+        >
+          ×
+        </button>
+        
+        <div style={{ padding: '20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
+            <div style={{
+              width: '60px',
+              height: '60px',
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '28px',
+              fontWeight: '700',
+              color: 'white'
+            }}>
+              {number}
+            </div>
+            <div>
+              <h2 style={{ fontSize: '32px', fontWeight: '700', marginBottom: '8px' }}>
+                {title}
+              </h2>
+              <p style={{ fontSize: '18px', color: '#9ca3af', margin: 0 }}>
+                {description}
+              </p>
+            </div>
+          </div>
+          
+          {gifUrl && (
+            <div style={{ 
+              width: '100%',
+              borderRadius: '12px',
+              overflow: 'hidden',
+              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)'
+            }}>
+              <img 
+                src={gifUrl}
+                alt={`${title} 상세 예시`}
+                style={{ 
+                  width: '100%',
+                  height: 'auto',
+                  display: 'block'
+                }}
+              />
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
