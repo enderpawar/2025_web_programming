@@ -859,12 +859,27 @@
   border-radius: 0.75rem;
   padding: 1rem;
   margin-bottom: 1rem;
+  box-shadow: 0 10px 25px rgba(168, 85, 247, 0.15), 0 0 0 1px rgba(168, 85, 247, 0.1);
+  animation: hintSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: top center;
+}
+
+@keyframes hintSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 /* Light mode hint panel */
 [data-theme="light"] .hint-panel {
   background-color: rgba(168, 85, 247, 0.05);
   border: 1px solid rgba(168, 85, 247, 0.2);
+  box-shadow: 0 10px 25px rgba(168, 85, 247, 0.1), 0 0 0 1px rgba(168, 85, 247, 0.08);
 }
 
 .hint-panel-header {
@@ -872,16 +887,44 @@
   align-items: center;
   gap: 0.75rem;
   margin-bottom: 1rem;
+  animation: hintHeaderFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.1s backwards;
+}
+
+@keyframes hintHeaderFade {
+  0% {
+    opacity: 0;
+    transform: translateX(-5px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .hint-panel-icon {
   font-size: 1.5rem;
+  animation: hintIconBounce 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s backwards;
+}
+
+@keyframes hintIconBounce {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) rotate(-10deg);
+  }
+  50% {
+    transform: scale(1.1) rotate(5deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
 }
 
 .hint-panel-title {
   font-size: 1.125rem;
   font-weight: 700;
   color: #a855f7;
+  text-shadow: 0 0 20px rgba(168, 85, 247, 0.3);
 }
 
 .hint-panel-content {
@@ -889,6 +932,18 @@
   line-height: 1.6;
   font-size: 0.875rem;
   white-space: pre-wrap;
+  animation: hintContentFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.3s backwards;
+}
+
+@keyframes hintContentFade {
+  0% {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .hint-code-block {
@@ -914,6 +969,16 @@
   align-items: center;
   justify-content: center;
   padding: 2rem;
+  animation: hintLoadingPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes hintLoadingPulse {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 .hint-spinner {

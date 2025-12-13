@@ -1,3 +1,20 @@
+// UUID 생성 헬퍼 함수 (crypto.randomUUID 폴리필)
+function generateUUID() {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    try {
+      return crypto.randomUUID();
+    } catch (e) {
+      // HTTPS가 아닌 경우 등 에러 발생 시 폴백
+    }
+  }
+  // 폴백: 간단한 UUID v4 생성
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0;
+    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
+
 // LocalStorage 기반 데이터 관리
 const STORAGE_KEYS = {
   USERS: 'jsc_users',
@@ -135,7 +152,7 @@ export const localAPI = {
     }
 
     const newUser = {
-      id: crypto.randomUUID(),
+      id: generateUUID(),
       email,
       name: name || email.split('@')[0],
       password,
@@ -215,7 +232,7 @@ export const localAPI = {
 
     const rooms = getRooms();
     const newRoom = {
-      id: crypto.randomUUID(),
+      id: generateUUID(),
       name: name || 'Untitled Room',
       groupName: groupName || 'Default Group',
       authorName: authorName || currentUser.name,
@@ -328,7 +345,7 @@ export const localAPI = {
     if (room.ownerId !== currentUser.id) throw new Error('권한이 없습니다');
 
     const newProblem = {
-      id: crypto.randomUUID(),
+      id: generateUUID(),
       ...problem,
       createdAt: Date.now()
     };
