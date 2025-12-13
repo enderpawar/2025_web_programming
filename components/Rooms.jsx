@@ -36,7 +36,7 @@ const Avatar = ({ logoUrl, title }) => {
   );
 };
 
-const RoomCard = ({ room, onClick, canDelete, onDelete, viewMode = 'list', index = 0, progress }) => {
+const RoomCard = ({ room, onClick, canDelete, onDelete, viewMode = 'list', index = 0, progress, onProgressClick }) => {
   if (viewMode === 'grid') {
     return (
       <div className="room-card-grid" style={{ animationDelay: `${index * 0.05}s` }}>
@@ -69,7 +69,11 @@ const RoomCard = ({ room, onClick, canDelete, onDelete, viewMode = 'list', index
               </span>
             </div>
             {progress && (
-              <div className="room-progress-section">
+              <div 
+                className="room-progress-section" 
+                onClick={(e) => { e.stopPropagation(); onProgressClick?.(); }}
+                style={{ cursor: 'pointer' }}
+              >
                 <div className="room-progress-label">
                   <span className="room-progress-icon">✅</span>
                   <span className="room-progress-text">
@@ -184,6 +188,86 @@ const CreateRoomModal = ({ open, onClose, onCreate }) => {
   );
 };
 
+const StudentProgressModal = ({ open, onClose, roomId, roomName }) => {
+  const [students, setStudents] = useState([]);
+
+  useEffect(() => {
+    if (open && roomId) {
+      const progress = api.getStudentProgress(roomId);
+      setStudents(progress);
+    }
+  }, [open, roomId]);
+
+  if (!open) return null;
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '800px' }}>
+        <h3 className="modal-title">학생별 진행 상황 - {roomName}</h3>
+        <div style={{ maxHeight: '500px', overflowY: 'auto' }}>
+          {students.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '40px', color: '#9ca3af' }}>
+              초대된 학생이 없습니다
+            </div>
+          ) : (
+            students.map((student) => (
+              <div key={student.studentId} style={{
+                background: 'var(--color-bg-darker)',
+                border: '1px solid var(--color-border)',
+                borderRadius: '12px',
+                padding: '20px',
+                marginBottom: '16px'
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                  <div>
+                    <div style={{ fontSize: '18px', fontWeight: '600', color: 'var(--color-text-primary)' }}>
+                      {student.studentName}
+                    </div>
+                    <div style={{ fontSize: '14px', color: '#9ca3af' }}>
+                      {student.studentEmail}
+                    </div>
+                  </div>
+                  <div style={{
+                    background: student.percentage === 100 ? 'linear-gradient(135deg, #10b981, #059669)' : 'var(--color-bg-dark)',
+                    padding: '8px 16px',
+                    borderRadius: '20px',
+                    fontWeight: '700',
+                    fontSize: '14px'
+                  }}>
+                    {student.completedCount}/{student.totalProblems} 완료 ({student.percentage}%)
+                  </div>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '8px', marginTop: '12px' }}>
+                  {student.problems.map((problem) => (
+                    <div key={problem.problemId} style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      padding: '8px 12px',
+                      background: problem.completed ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+                      border: `1px solid ${problem.completed ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`,
+                      borderRadius: '8px',
+                      fontSize: '13px'
+                    }}>
+                      <span>{problem.completed ? '✅' : '❌'}</span>
+                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {problem.problemTitle}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+        <div className="modal-footer">
+          <button className="btn btn-primary" onClick={onClose}>닫기</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const Rooms = () => {
   const navigate = useNavigate();
   const [filters, setFilters] = useState({ room: '', group: '', author: '' });
@@ -194,6 +278,8 @@ const Rooms = () => {
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState('latest');
   const [viewMode, setViewMode] = useState('grid');
+  const [progressModalOpen, setProgressModalOpen] = useState(false);
+  const [selectedRoom, setSelectedRoom] = useState(null);
 
   const [roomProgress, setRoomProgress] = useState({});
 
@@ -325,6 +411,10 @@ const Rooms = () => {
             viewMode={viewMode}
             index={index}
             progress={roomProgress[room.id]}
+            onProgressClick={() => {
+              setSelectedRoom(room);
+              setProgressModalOpen(true);
+            }}
             onDelete={async () => {
               const ok = confirm('이 방과 모든 문제 및 코드를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.');
               if (!ok) return;
@@ -371,6 +461,16 @@ const Rooms = () => {
             console.error(e);
           }
         }}
+      />
+
+      <StudentProgressModal
+        open={progressModalOpen}
+        onClose={() => {
+          setProgressModalOpen(false);
+          setSelectedRoom(null);
+        }}
+        roomId={selectedRoom?.id}
+        roomName={selectedRoom?.name}
       />
     </div>
   );

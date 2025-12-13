@@ -580,7 +580,6 @@ const RoomCompiler = () => {
           )}
 
           <div className="problem-section compiler-action-buttons">
-            <button onClick={handleRunCode} disabled={isRunning} className="btn btn-primary compiler-run-btn">{isRunning ? '실행 중…' : '실행'}</button>
             {problem && (
               <>
                 <button onClick={runTests} className="btn btn-primary compiler-run-btn">테스트 실행</button>

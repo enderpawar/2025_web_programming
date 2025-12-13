@@ -190,6 +190,10 @@ export const api = {
     return localAPI.getRoomProgress(roomId);
   },
   
+  getStudentProgress(roomId) {
+    return localAPI.getStudentProgress(roomId);
+  },
+  
   isProblemCompleted(roomId, problemId) {
     return localAPI.isProblemCompleted(roomId, problemId);
   },

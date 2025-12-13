@@ -480,6 +480,42 @@ export const localAPI = {
     };
   },
 
+  // 학생별 상세 진행 정보 가져오기
+  getStudentProgress(roomId) {
+    const room = this.getRoom(roomId);
+    const codes = getCodes();
+    const users = getUsers();
+    
+    const students = room.members
+      .filter(memberId => memberId !== room.ownerId)
+      .map(studentId => {
+        const user = users.find(u => u.id === studentId);
+        const problemsProgress = room.problems.map(problem => {
+          const key = `${studentId}-${roomId}-${problem.id}`;
+          const codeData = codes[key];
+          return {
+            problemId: problem.id,
+            problemTitle: problem.title,
+            completed: codeData?.passed === true
+          };
+        });
+        
+        const completedCount = problemsProgress.filter(p => p.completed).length;
+        
+        return {
+          studentId,
+          studentName: user?.name || 'Unknown',
+          studentEmail: user?.email || '',
+          problems: problemsProgress,
+          completedCount,
+          totalProblems: room.problems.length,
+          percentage: room.problems.length > 0 ? Math.round((completedCount / room.problems.length) * 100) : 0
+        };
+      });
+    
+    return students;
+  },
+
   // 특정 문제가 완료되었는지 확인 (현재 로그인한 사용자 기준)
   isProblemCompleted(roomId, problemId) {
     const currentUser = getCurrentUser();
