@@ -1,97 +1,125 @@
-# 🎓 JavaScript 교육 플랫폼
+# 🎓 JSC - JavaScript 교육 플랫폼
+<img width="3839" height="1979" alt="image" src="https://github.com/user-attachments/assets/cb95997d-4a1c-4735-b304-02e083a11df4" />
 
 실시간 코드 편집과 AI 힌트를 제공하는 인터랙티브 JavaScript 학습 플랫폼입니다. 교수는 학습 방을 생성하고 학생들을 초대하며, 학생들의 진행 상황을 실시간으로 모니터링할 수 있습니다.
 
 ## 📸 주요 화면
 
-### Landing Page
+### 1) Landing Page
+<img width="3839" height="1984" alt="image" src="https://github.com/user-attachments/assets/cfaafb49-48fc-44ed-955a-5371fe508362" />
+
 - 플랫폼 소개 및 사용 가이드를 제공하는 메인 페이지입니다.
 
 <details>
   <summary>Landing Page 세부 기능 소개(클릭)</summary>
 
 1. **인터랙티브 GIF 미리보기**
+<img width="3839" height="1711" alt="image" src="https://github.com/user-attachments/assets/efa63ebd-6d6e-41d5-91d7-cf543837149f" />
+
    - 각 사용 단계 카드에 마우스를 올리면 GIF가 재생됩니다.
    - 카드를 클릭하면 전체 화면 모달로 확대하여 볼 수 있습니다.
 
 2. **다크모드 / 라이트모드 토글**
+<img width="2262" height="1962" alt="image" src="https://github.com/user-attachments/assets/4cfa282e-0368-4664-a083-e5b0c26c531c" />
    - 사용자 선호에 따라 테마를 전환할 수 있습니다.
    - 설정은 localStorage에 저장되어 다음 방문 시에도 유지됩니다.
 
-3. **간편한 시작**
+3. **간편한 시작*
+   <img width="2143" height="1265" alt="image" src="https://github.com/user-attachments/assets/241f0e77-3196-43de-b36b-eeaceb0ffc5d" />
    - "시작하기" 버튼으로 바로 로그인 페이지로 이동합니다.
+
+4. **API키 설정**
+<img width="1913" height="600" alt="image" src="https://github.com/user-attachments/assets/6bc7f8f7-03da-414b-81f9-d70ea16520de" />
+<img width="2078" height="1378" alt="image" src="https://github.com/user-attachments/assets/6f12409c-7c87-4da2-8589-0e81b808caf6" />
+   -우측 Profile 모달에서 GEMINI API키를 설정할 수 있습니다.
 </details>
 
-### Rooms Page
-- 생성된 학습 방 목록과 학생 진행 상황을 한눈에 볼 수 있는 페이지입니다.
+### 2) Rooms Page 
+<img width="2023" height="1208" alt="image" src="https://github.com/user-attachments/assets/cf96bf77-33ea-4e20-8216-6aa7a9bc7b88" />
+
+- 생성된 학습 방 목록과 학생 진행 상황, 문제 목록을 한눈에 볼 수 있는 페이지입니다.
 
 <details>
   <summary>Rooms Page 세부 기능 소개(클릭)</summary>
 
 1. **방 생성 및 관리**
-   - 교수는 새로운 학습 방을 생성할 수 있습니다.
+   <img width="1894" height="1439" alt="image" src="https://github.com/user-attachments/assets/a5dd59cf-39a0-4490-a8c1-7ac9b7de47d4" />
+
+   - 교수는 우측 상단 create 버튼을 클릭해 새로운 학습 방을 생성할 수 있습니다.
    - 각 방에는 제목, 설명, 초대된 학생 목록이 포함됩니다.
    - 방 삭제 버튼(X)으로 불필요한 방을 제거할 수 있습니다.
 
-2. **학생 초대 시스템**
-   - 이메일을 통해 학생을 방에 초대할 수 있습니다.
-   - 초대된 학생 목록이 실시간으로 표시됩니다.
+2. **실시간 진행 상황 추적**
+ <img width="1423" height="599" alt="image" src="https://github.com/user-attachments/assets/ff1dd9f7-a881-4deb-9ccb-91f3a8b5eb4c" />
 
-3. **실시간 진행 상황 추적**
    - "n/n 학생이 학습 완료했습니다" 형태로 진행률이 표시됩니다.
    - 진행률 섹션을 클릭하면 학생별 상세 진행 상황 모달이 열립니다.
    - 각 학생이 어떤 문제를 완료했는지 한눈에 확인할 수 있습니다.
 
-4. **학생 코드 열람 (교수 전용)**
+3. **학생 코드 열람 (교수 전용)**
+ <img width="1512" height="1129" alt="image" src="https://github.com/user-attachments/assets/64d0563a-53c7-4df2-9c57-ebc156e66522" />
+
    - 진행 상황 모달에서 "📝 코드 보기" 버튼을 클릭하면 학생의 실제 코드를 확인할 수 있습니다.
    - 코드와 함께 통과 여부, 작성 시간이 표시됩니다.
    - Monaco Editor를 통한 구문 강조 표시로 가독성이 높습니다.
 </details>
 
-### Problems Page
+### 3) Problems Page
+<img width="3395" height="1830" alt="image" src="https://github.com/user-attachments/assets/ae9d7f78-3a0b-498f-bc24-cfacc17ec0b2" />
+
 - 방에 포함된 문제 목록을 보여주는 페이지입니다.
 
 <details>
   <summary>Problems Page 세부 기능 소개(클릭)</summary>
 
-1. **문제 생성 (교수 전용)**
+  1. **학생 초대 시스템**
+<img width="2180" height="1663" alt="image" src="https://github.com/user-attachments/assets/f622ca7d-f39f-4208-9ef1-234d5dd02ae5" />
+
+   - 현재 생성된 계정 목록을 통해 원하는 학생을 방에 초대할 수 있습니다.
+   - 초대된 학생 목록이 실시간으로 표시됩니다.
+
+2. **문제 생성 (교수 전용)**
+   <img width="3351" height="1869" alt="image" src="https://github.com/user-attachments/assets/e2f36ed8-66da-4e80-bef3-2e0a2324af24" />
+
    - 수동으로 문제를 작성하거나 PDF 파일을 업로드하여 자동으로 문제를 생성할 수 있습니다.
    - Gemini AI가 PDF를 분석하여 문제를 추출합니다.
 
-2. **문제 카드**
-   - 각 문제는 제목, 난이도, 작성자 정보와 함께 카드 형태로 표시됩니다.
-   - 완료한 문제에는 "✓ COMPLETE!" 배지가 표시됩니다.
+4. **문제 카드**
+ <img width="2930" height="1271" alt="image" src="https://github.com/user-attachments/assets/71685440-c4db-4d3a-ad1d-56452c59d08a" />
+<img width="2441" height="1201" alt="image" src="https://github.com/user-attachments/assets/c6b7012a-dcfd-41ce-8c05-ea0845eccf79" />
 
-3. **문제 정렬 및 필터링**
-   - 난이도별, 완료 여부별로 문제를 정렬할 수 있습니다.
+   - 각 문제는 제목, 난이도, 작성자 정보와 함께 카드 or 그리드 형태로 표시됩니다.
+   - 완료한 문제에는 "✓ COMPLETE!" 배지가 표시됩니다.
 </details>
 
-### Editor Page
+### 4) Editor Page
+<img width="3839" height="1966" alt="image" src="https://github.com/user-attachments/assets/aef05327-4fb2-45f0-9c24-85830411f7d2" />
+
 - 실시간 코드 편집과 테스트를 수행할 수 있는 페이지입니다.
 
 <details>
   <summary>Editor Page 세부 기능 소개(클릭)</summary>
 
-1. **Monaco Editor 통합**
-   - VS Code와 동일한 편집 경험을 제공합니다.
-   - 자동 완성, 구문 강조, 인텔리센스 지원
-   - 다크모드 / 라이트모드에 따른 테마 자동 전환
+1. **실시간 코드 실행**
+   <img width="3141" height="1874" alt="image" src="https://github.com/user-attachments/assets/45819a50-413f-45be-b635-3b50091cffde" />
 
-2. **실시간 코드 실행**
-   - "Run Code" 버튼으로 브라우저에서 즉시 코드를 실행합니다.
+   - "Run" 버튼으로 브라우저에서 즉시 코드를 실행합니다.
    - 콘솔 출력, 오류 메시지를 실시간으로 확인할 수 있습니다.
 
-3. **자동 테스트 케이스**
-   - "Submit" 버튼으로 서버에서 테스트 케이스를 실행합니다.
+2. **자동 테스트 케이스**
+   <img width="716" height="759" alt="image" src="https://github.com/user-attachments/assets/389de9ad-36ea-4954-8b5a-09d75da3a8a4" />
+   - "테스트 실행" 버튼으로 서버에서 테스트 케이스를 실행합니다.
    - 각 테스트의 통과/실패 여부와 예상 출력을 확인할 수 있습니다.
    - 모든 테스트를 통과하면 자동으로 완료 상태로 저장됩니다.
 
-4. **AI 힌트 시스템**
+3. **AI 힌트 시스템**
+   <img width="725" height="1853" alt="image" src="https://github.com/user-attachments/assets/f7596f19-cc61-4b45-9700-1f6a7bc8d64a" />
+
    - "💡 Get AI Hint" 버튼으로 Gemini AI의 도움을 받을 수 있습니다.
    - AI가 현재 코드와 문제를 분석하여 정답을 알려주지 않고 힌트만 제공합니다.
    - 학습 효과를 극대화하는 단계별 가이드를 제공합니다.
 
-5. **코드 자동 저장**
+4. **코드 자동 저장**
    - 코드는 localStorage에 자동으로 저장됩니다.
    - 페이지를 새로고침하거나 나갔다가 돌아와도 작성 중인 코드가 유지됩니다.
 </details>
@@ -144,10 +172,7 @@ AI 힌트 기능을 사용하려면 Google Gemini API 키가 필요합니다:
 1. [Google AI Studio](https://ai.google.dev/) 방문
 2. Google 계정으로 로그인
 3. "Get API Key" 클릭하여 새 키 생성
-4. 프로젝트 루트에 `.env` 파일 생성:
-   ```
-   GEMINI_API_KEY=your_actual_api_key_here
-   ```
+
 
 ## 👥 기본 계정
 
@@ -179,8 +204,8 @@ AI 힌트 기능을 사용하려면 Google Gemini API 키가 필요합니다:
 1. 학생 계정으로 로그인
 2. 초대받은 방의 문제 목록에서 문제 선택
 3. Monaco Editor에서 코드 작성
-4. "Run Code"로 즉시 실행하여 결과 확인
-5. "Submit"으로 테스트 케이스 실행
+4. "Run"로 즉시 실행하여 결과 확인
+5. "테스트 실행"으로 테스트 케이스 실행
 6. 막힐 경우 "💡 Get AI Hint"로 도움 받기
 
 ### 4. 교수가 진행 상황 확인하기
@@ -259,9 +284,9 @@ MIT License
 ---
 
 > **Made with ❤️ for JavaScript Education**
-  2. 학생을 Room에 초대 가능
-  3. Room 내에서 문제 생성 가능
-  4. 자신의 Room에 대한 완전한 제어권
+  1. 학생을 Room에 초대 가능
+  2. Room 내에서 문제 생성 가능
+  3. 자신의 Room에 대한 완전한 제어권
 
 - **학생 권한:**
   1. 초대받은 Room에 참여 가능
