@@ -541,8 +541,23 @@ export const localAPI = {
     return codeData ? {
       code: codeData.code,
       passed: codeData.passed,
-      updatedAt: codeData.updatedAt
+      updatedAt: codeData.updatedAt,
+      feedback: codeData.feedback || ''
     } : null;
+  },
+
+  // 학생 코드에 피드백 저장 (교수용)
+  saveFeedback(studentId, roomId, problemId, feedback) {
+    const codes = getCodes();
+    const key = `${studentId}-${roomId}-${problemId}`;
+    
+    if (codes[key]) {
+      codes[key].feedback = feedback;
+      codes[key].feedbackUpdatedAt = new Date().toISOString();
+      setCodes(codes);
+      return true;
+    }
+    return false;
   },
 
   // Gemini API 키 설정

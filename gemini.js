@@ -157,3 +157,96 @@ JSON만 반환하세요:`;
     throw new Error('문제 생성에 실패했습니다: ' + error.message);
   }
 }
+
+// AI 코드 리뷰 생성 (교수용)
+export async function generateCodeReview(studentCode, problemTitle, problemDescription, testPassed) {
+  try {
+    console.log('[generateCodeReview] 시작');
+    const apiKey = getApiKey();
+    console.log('[generateCodeReview] API 키 확인:', apiKey ? '✅ 있음' : '❌ 없음');
+    
+    if (!apiKey) {
+      throw new Error('API 키가 설정되지 않았습니다. Profile > API Setting에서 설정해주세요.');
+    }
+    
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+
+    const prompt = `당신은 경험 많은 프로그래밍 교수이자 코드 리뷰어입니다.
+
+**문제**: ${problemTitle}
+**문제 설명**: ${problemDescription}
+**테스트 통과 여부**: ${testPassed ? '✅ 통과' : '❌ 미통과'}
+
+**학생의 코드**:
+\`\`\`javascript
+${studentCode}
+\`\`\`
+
+다음 항목들을 분석하여 **교육적이고 건설적인 피드백**을 제공하세요:
+
+1. **코드 품질 평가** (1-5점):
+   - 가독성: X/5
+   - 효율성: X/5
+   - 정확성: X/5
+
+2. **잘한 점** (2-3가지):
+   - 구체적으로 어떤 부분이 좋았는지
+
+3. **개선이 필요한 점** (2-3가지):
+   - 구체적인 개선 방법과 이유
+
+4. **코드 개선 제안**:
+   - 핵심적으로 개선해야 할 부분의 코드 예시 (3-5줄)
+
+5. **학습 조언**:
+   - 이 학생이 다음에 공부하면 좋을 개념이나 자료
+
+**응답 형식**:
+반드시 다음 JSON 형식으로 응답하세요:
+{
+  "ratings": {
+    "readability": 4,
+    "efficiency": 3,
+    "correctness": 5
+  },
+  "strengths": ["잘한 점 1", "잘한 점 2"],
+  "improvements": ["개선점 1", "개선점 2"],
+  "suggestedCode": "// 개선된 코드 예시",
+  "learningAdvice": "학습 조언 내용"
+}`;
+
+    console.log('[generateCodeReview] Gemini API 호출 중...');
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
+    
+    console.log('[generateCodeReview] AI 응답 받음:', text.substring(0, 200));
+    
+    // JSON 추출
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      console.error('[generateCodeReview] JSON 파싱 실패. 응답:', text);
+      throw new Error('AI 응답을 파싱할 수 없습니다. 응답 형식이 올바르지 않습니다.');
+    }
+    
+    const review = JSON.parse(jsonMatch[0]);
+    console.log('[generateCodeReview] 성공:', review);
+    return review;
+  } catch (error) {
+    console.error('[generateCodeReview] 에러 발생:', error);
+    
+    // 더 자세한 에러 메시지 제공
+    if (error.message.includes('API 키')) {
+      throw error; // API 키 관련 에러는 그대로 전달
+    } else if (error.message.includes('quota')) {
+      throw new Error('API 사용량 한도를 초과했습니다. 잠시 후 다시 시도해주세요.');
+    } else if (error.message.includes('invalid')) {
+      throw new Error('유효하지 않은 API 키입니다. API 키를 다시 확인해주세요.');
+    } else if (error.message.includes('network')) {
+      throw new Error('네트워크 오류가 발생했습니다. 인터넷 연결을 확인해주세요.');
+    } else {
+      throw new Error(`AI 코드 리뷰 생성 실패: ${error.message}`);
+    }
+  }
+}

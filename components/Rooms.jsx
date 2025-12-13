@@ -189,7 +189,104 @@ const CreateRoomModal = ({ open, onClose, onCreate }) => {
   );
 };
 
-const StudentCodeModal = ({ open, onClose, studentName, problemTitle, code, passed, updatedAt }) => {
+const StudentCodeModal = ({ open, onClose, studentName, problemTitle, code, passed, updatedAt, studentId, roomId, problemId }) => {
+  const [feedback, setFeedback] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveMessage, setSaveMessage] = useState('');
+  const [activeTab, setActiveTab] = useState('manual'); // 'manual', 'ai', 'template'
+  const [aiReview, setAiReview] = useState(null);
+  const [isLoadingAI, setIsLoadingAI] = useState(false);
+  const [ratings, setRatings] = useState({ readability: 0, efficiency: 0, correctness: 0 });
+
+  // 피드백 템플릿
+  const feedbackTemplates = [
+    { id: 1, title: '잘 작성했습니다', content: '코드가 전반적으로 잘 작성되었습니다. 로직이 명확하고 테스트도 모두 통과했습니다. 계속 이런 식으로 학습하시길 바랍니다.' },
+    { id: 2, title: '개선이 필요합니다', content: '코드의 기본 구조는 괜찮으나 몇 가지 개선이 필요합니다:\n1. 변수명을 더 명확하게 작성하세요\n2. 주석을 추가하여 코드의 의도를 설명하세요\n3. 엣지 케이스를 고려하세요' },
+    { id: 3, title: '효율성 개선', content: '현재 코드는 작동하지만 시간 복잡도가 높습니다. 다음을 고려해보세요:\n- 중첩 반복문을 줄일 수 있는 방법\n- 적절한 자료구조 활용 (Map, Set 등)\n- 불필요한 연산 제거' },
+    { id: 4, title: '재제출 권장', content: '현재 코드는 테스트를 통과하지 못했습니다. 다음을 확인하세요:\n1. 문제 요구사항을 다시 읽어보세요\n2. 엣지 케이스를 테스트해보세요\n3. console.log로 중간 값을 확인하세요\n막히는 부분이 있다면 AI 힌트를 활용하세요.' },
+  ];
+
+  useEffect(() => {
+    if (open && studentId && roomId && problemId) {
+      const codeData = api.getStudentCode(studentId, roomId, problemId);
+      setFeedback(codeData?.feedback || '');
+      setAiReview(null);
+    }
+  }, [open, studentId, roomId, problemId]);
+
+  const handleSaveFeedback = () => {
+    setIsSaving(true);
+    const success = api.saveFeedback(studentId, roomId, problemId, feedback);
+    
+    if (success) {
+      setSaveMessage('✅ 피드백이 저장되었습니다');
+    } else {
+      setSaveMessage('❌ 피드백 저장에 실패했습니다');
+    }
+    
+    setIsSaving(false);
+    setTimeout(() => setSaveMessage(''), 3000);
+  };
+
+  const handleGenerateAIReview = async () => {
+    setIsLoadingAI(true);
+    try {
+      const rooms = await api.rooms();
+      const room = rooms.find(r => r.id === roomId);
+      const problem = room?.problems.find(p => p.id === problemId);
+      
+      const { generateCodeReview } = await import('../gemini.js');
+      const review = await generateCodeReview(
+        code,
+        problemTitle,
+        problem?.description || '',
+        passed
+      );
+      
+      setAiReview(review);
+      setActiveTab('ai');
+      
+      // AI 리뷰를 피드백 텍스트로 포맷팅
+      const formattedFeedback = `**AI 코드 리뷰**
+
+📊 **평가**:
+- 가독성: ${review.ratings.readability}/5
+- 효율성: ${review.ratings.efficiency}/5
+- 정확성: ${review.ratings.correctness}/5
+
+✅ **잘한 점**:
+${review.strengths.map((s, i) => `${i + 1}. ${s}`).join('\n')}
+
+🔧 **개선 필요**:
+${review.improvements.map((i, idx) => `${idx + 1}. ${i}`).join('\n')}
+
+💡 **코드 개선 제안**:
+\`\`\`javascript
+${review.suggestedCode}
+\`\`\`
+
+📚 **학습 조언**:
+${review.learningAdvice}`;
+      
+      setFeedback(formattedFeedback);
+    } catch (error) {
+      console.error('AI 리뷰 생성 실패:', error);
+      const errorMessage = error.message || 'AI 리뷰 생성에 실패했습니다.';
+      alert(`❌ ${errorMessage}\n\n현재 API 키: ${api.getGeminiApiKey() ? '✅ 설정됨' : '❌ 미설정'}\n\n상세 오류: ${error.toString()}`);
+    } finally {
+      setIsLoadingAI(false);
+    }
+  };
+
+  const handleTemplateSelect = (template) => {
+    setFeedback(template.content);
+    setActiveTab('manual');
+  };
+
+  const handleRatingChange = (category, value) => {
+    setRatings(prev => ({ ...prev, [category]: value }));
+  };
+
   if (!open) return null;
 
   return (
@@ -218,8 +315,9 @@ const StudentCodeModal = ({ open, onClose, studentName, problemTitle, code, pass
           border: '1px solid var(--color-border)',
           borderRadius: '8px',
           padding: '16px',
-          maxHeight: '500px',
-          overflowY: 'auto'
+          maxHeight: '400px',
+          overflowY: 'auto',
+          marginBottom: '16px'
         }}>
           <pre style={{ 
             margin: 0, 
@@ -232,6 +330,227 @@ const StudentCodeModal = ({ open, onClose, studentName, problemTitle, code, pass
             {code || '작성된 코드가 없습니다.'}
           </pre>
         </div>
+
+        {/* 피드백 섹션 */}
+        <div style={{ marginBottom: '16px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+            <label style={{ 
+              fontSize: '16px',
+              fontWeight: '700',
+              color: 'var(--text-primary)'
+            }}>
+              🗒️ 교수자 피드백
+            </label>
+            <button
+              onClick={handleGenerateAIReview}
+              disabled={isLoadingAI || !code}
+              style={{
+                padding: '8px 16px',
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                fontSize: '13px',
+                fontWeight: '600',
+                cursor: isLoadingAI ? 'wait' : 'pointer',
+                opacity: isLoadingAI || !code ? 0.6 : 1,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                transition: 'all 0.3s'
+              }}
+              onMouseEnter={(e) => !isLoadingAI && (e.target.style.transform = 'translateY(-2px)')}
+              onMouseLeave={(e) => (e.target.style.transform = 'translateY(0)')}
+            >
+              🤖 {isLoadingAI ? 'AI 분석 중...' : 'AI 자동 리뷰'}
+            </button>
+          </div>
+
+          {/* 탭 네비게이션 */}
+          <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', borderBottom: '2px solid var(--color-border)' }}>
+            <button
+              onClick={() => setActiveTab('manual')}
+              style={{
+                padding: '8px 16px',
+                background: 'none',
+                border: 'none',
+                borderBottom: activeTab === 'manual' ? '3px solid #3b82f6' : '3px solid transparent',
+                color: activeTab === 'manual' ? '#3b82f6' : 'var(--text-secondary)',
+                fontSize: '14px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                transition: 'all 0.3s'
+              }}
+            >
+              ✏️ 직접 작성
+            </button>
+            <button
+              onClick={() => setActiveTab('template')}
+              style={{
+                padding: '8px 16px',
+                background: 'none',
+                border: 'none',
+                borderBottom: activeTab === 'template' ? '3px solid #3b82f6' : '3px solid transparent',
+                color: activeTab === 'template' ? '#3b82f6' : 'var(--text-secondary)',
+                fontSize: '14px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                transition: 'all 0.3s'
+              }}
+            >
+              📋 템플릿
+            </button>
+            {aiReview && (
+              <button
+                onClick={() => setActiveTab('ai')}
+                style={{
+                  padding: '8px 16px',
+                  background: 'none',
+                  border: 'none',
+                  borderBottom: activeTab === 'ai' ? '3px solid #3b82f6' : '3px solid transparent',
+                  color: activeTab === 'ai' ? '#3b82f6' : 'var(--text-secondary)',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s'
+                }}
+              >
+                🤖 AI 리뷰
+              </button>
+            )}
+          </div>
+
+          {/* 템플릿 선택 */}
+          {activeTab === 'template' && (
+            <div style={{ marginBottom: '12px', display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
+              {feedbackTemplates.map(template => (
+                <button
+                  key={template.id}
+                  onClick={() => handleTemplateSelect(template)}
+                  style={{
+                    padding: '12px',
+                    background: 'var(--color-bg-darker)',
+                    border: '2px solid var(--color-border)',
+                    borderRadius: '8px',
+                    color: 'var(--text-primary)',
+                    fontSize: '13px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    transition: 'all 0.3s'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.borderColor = '#3b82f6';
+                    e.target.style.transform = 'translateY(-2px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.borderColor = 'var(--color-border)';
+                    e.target.style.transform = 'translateY(0)';
+                  }}
+                >
+                  {template.title}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* AI 리뷰 결과 */}
+          {activeTab === 'ai' && aiReview && (
+            <div style={{ marginBottom: '12px', padding: '16px', background: 'var(--color-bg-darker)', borderRadius: '8px', border: '2px solid #667eea' }}>
+              <div style={{ marginBottom: '16px' }}>
+                <h4 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '12px', color: 'var(--text-primary)' }}>📊 코드 평가</h4>
+                <div style={{ display: 'flex', gap: '16px' }}>
+                  {Object.entries(aiReview.ratings).map(([key, value]) => (
+                    <div key={key} style={{ flex: 1 }}>
+                      <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '4px' }}>
+                        {key === 'readability' ? '가독성' : key === 'efficiency' ? '효율성' : '정확성'}
+                      </div>
+                      <div style={{ display: 'flex', gap: '4px' }}>
+                        {[1, 2, 3, 4, 5].map(star => (
+                          <span key={star} style={{ fontSize: '16px', color: star <= value ? '#fbbf24' : '#4b5563' }}>⭐</span>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              <div style={{ marginBottom: '12px' }}>
+                <h4 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '8px', color: '#10b981' }}>✅ 잘한 점</h4>
+                <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '13px', lineHeight: '1.8' }}>
+                  {aiReview.strengths.map((s, i) => <li key={i}>{s}</li>)}
+                </ul>
+              </div>
+
+              <div style={{ marginBottom: '12px' }}>
+                <h4 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '8px', color: '#f59e0b' }}>🔧 개선 필요</h4>
+                <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '13px', lineHeight: '1.8' }}>
+                  {aiReview.improvements.map((i, idx) => <li key={idx}>{i}</li>)}
+                </ul>
+              </div>
+
+              {aiReview.suggestedCode && (
+                <div style={{ marginBottom: '12px' }}>
+                  <h4 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '8px', color: '#3b82f6' }}>💡 개선 제안</h4>
+                  <pre style={{ 
+                    padding: '12px', 
+                    background: 'var(--color-bg)', 
+                    borderRadius: '6px', 
+                    fontSize: '12px',
+                    overflow: 'auto',
+                    border: '1px solid var(--color-border)'
+                  }}>{aiReview.suggestedCode}</pre>
+                </div>
+              )}
+
+              <div>
+                <h4 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '8px', color: '#8b5cf6' }}>📚 학습 조언</h4>
+                <p style={{ fontSize: '13px', lineHeight: '1.6', margin: 0 }}>{aiReview.learningAdvice}</p>
+              </div>
+            </div>
+          )}
+
+          {/* 피드백 입력 */}
+          <textarea
+            value={feedback}
+            onChange={(e) => setFeedback(e.target.value)}
+            placeholder="학생에게 전달할 피드백을 작성하세요..."
+            style={{
+              width: '100%',
+              minHeight: '250px',
+              padding: '16px',
+              borderRadius: '8px',
+              border: '2px solid var(--color-border)',
+              background: 'var(--color-bg-darker)',
+              color: 'var(--text-primary)',
+              fontSize: '15px',
+              lineHeight: '1.8',
+              resize: 'vertical',
+              fontFamily: 'inherit'
+            }}
+          />
+          
+          <div style={{ marginTop: '12px', display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <button 
+              className="btn btn-primary"
+              onClick={handleSaveFeedback}
+              disabled={isSaving}
+              style={{ padding: '10px 20px', fontSize: '14px', fontWeight: '600' }}
+            >
+              {isSaving ? '저장 중...' : '💾 피드백 저장'}
+            </button>
+            {saveMessage && (
+              <span style={{ 
+                fontSize: '13px',
+                fontWeight: '600',
+                color: saveMessage.includes('✅') ? '#10b981' : '#ef4444'
+              }}>
+                {saveMessage}
+              </span>
+            )}
+          </div>
+        </div>
+
         <div className="modal-footer">
           <button className="btn btn-primary" onClick={onClose}>닫기</button>
         </div>
@@ -259,7 +578,10 @@ const StudentProgressModal = ({ open, onClose, roomId, roomName }) => {
       problemTitle: problem.problemTitle,
       code: codeData?.code || '',
       passed: codeData?.passed || false,
-      updatedAt: codeData?.updatedAt
+      updatedAt: codeData?.updatedAt,
+      studentId: student.studentId,
+      roomId: roomId,
+      problemId: problem.problemId
     });
     setCodeModalOpen(true);
   };
@@ -378,6 +700,9 @@ const StudentProgressModal = ({ open, onClose, roomId, roomName }) => {
         code={selectedCode?.code}
         passed={selectedCode?.passed}
         updatedAt={selectedCode?.updatedAt}
+        studentId={selectedCode?.studentId}
+        roomId={selectedCode?.roomId}
+        problemId={selectedCode?.problemId}
       />
     </>
   );

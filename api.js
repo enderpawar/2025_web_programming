@@ -202,6 +202,14 @@ export const api = {
     return localAPI.getStudentCode(studentId, roomId, problemId);
   },
 
+  saveFeedback(studentId, roomId, problemId, feedback) {
+    return localAPI.saveFeedback(studentId, roomId, problemId, feedback);
+  },
+
+  getGeminiApiKey() {
+    return localAPI.getGeminiApiKey();
+  },
+
   // 하위 호환성
   token: '',
   API_URL: '',
