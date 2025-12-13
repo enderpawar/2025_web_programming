@@ -80,13 +80,14 @@ const RoomCard = ({ room, onClick, canDelete, onDelete, viewMode = 'list', index
                     {progress.completedStudents}/{Math.max(0, (room.members?.length || 1) - 1)} 학생이 학습 완료했습니다
                   </span>
                 </div>
-                <div className="room-progress-bar-container">
-                  <div 
-                    className="room-progress-bar-fill" 
-                    style={{ width: `${Math.max(0, (room.members?.length || 1) - 1) === 0 ? 0 : Math.round((progress.completedStudents / Math.max(0, (room.members?.length || 1) - 1)) * 100)}%` }}
-                  >
-                    <span className="room-progress-percentage">{Math.max(0, (room.members?.length || 1) - 1) === 0 ? 0 : Math.round((progress.completedStudents / Math.max(0, (room.members?.length || 1) - 1)) * 100)}%</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <div className="room-progress-bar-container">
+                    <div 
+                      className="room-progress-bar-fill" 
+                      style={{ width: `${Math.max(0, (room.members?.length || 1) - 1) === 0 ? 0 : Math.round((progress.completedStudents / Math.max(0, (room.members?.length || 1) - 1)) * 100)}%` }}
+                    />
                   </div>
+                  <span className="room-progress-percentage">{Math.max(0, (room.members?.length || 1) - 1) === 0 ? 0 : Math.round((progress.completedStudents / Math.max(0, (room.members?.length || 1) - 1)) * 100)}%</span>
                 </div>
               </div>
             )}

@@ -777,7 +777,7 @@
 
 .room-progress-bar-container {
   position: relative;
-  width: 100%;
+  flex: 1;
   height: 32px;
   background: rgba(0, 0, 0, 0.2);
   border-radius: 16px;
@@ -791,13 +791,11 @@
   background: linear-gradient(90deg, #0d9488, #14b8a6, #10b981);
   background-size: 200% 100%;
   border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   box-shadow: 0 4px 12px rgba(20, 184, 166, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.3);
   animation: shimmer 3s ease-in-out infinite;
+  min-width: 0;
 }
 
 @keyframes shimmer {
@@ -841,13 +839,13 @@
 }
 
 .room-progress-percentage {
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   font-weight: 800;
-  color: white;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-  position: relative;
-  z-index: 1;
+  color: var(--text-primary);
+  min-width: 45px;
+  text-align: right;
   letter-spacing: 0.05em;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 /* List view progress (inline) - Enhanced */
