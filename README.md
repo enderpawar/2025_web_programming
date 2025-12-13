@@ -5,7 +5,7 @@
 ## 📸 주요 화면
 
 ### Landing Page
-<img width="3839" height="1977" alt="image" src="https://github.com/user-attachments/assets/98a4fa2f-bc3e-4962-b4bd-cbdc24deb594" />
+<img width="3839" height="1984" alt="image" src="https://github.com/user-attachments/assets/cfaafb49-48fc-44ed-955a-5371fe508362" />
 
 - 플랫폼 소개 및 사용 가이드를 제공하는 메인 페이지입니다.
 
@@ -13,8 +13,7 @@
   <summary>Landing Page 세부 기능 소개(클릭)</summary>
 
 1. **인터랙티브 GIF 미리보기**
-<img width="3839" height="1845" alt="image" src="https://github.com/user-attachments/assets/b9eb46f6-04e0-4578-9be0-a88f0d4b9324" />
-
+<img width="3839" height="1711" alt="image" src="https://github.com/user-attachments/assets/efa63ebd-6d6e-41d5-91d7-cf543837149f" />
 
    - 각 사용 단계 카드에 마우스를 올리면 GIF가 재생됩니다.
    - 카드를 클릭하면 전체 화면 모달로 확대하여 볼 수 있습니다.
