@@ -1,4 +1,5 @@
-<img width="2023" height="1208" alt="image" src="https://github.com/user-attachments/assets/01ce3bab-62b5-4e78-b5af-7c95fbee2671" /># 🎓 JavaScript 교육 플랫폼
+# 🎓 JSC - JavaScript 교육 플랫폼
+<img width="3839" height="1979" alt="image" src="https://github.com/user-attachments/assets/cb95997d-4a1c-4735-b304-02e083a11df4" />
 
 실시간 코드 편집과 AI 힌트를 제공하는 인터랙티브 JavaScript 학습 플랫폼입니다. 교수는 학습 방을 생성하고 학생들을 초대하며, 학생들의 진행 상황을 실시간으로 모니터링할 수 있습니다.
 
