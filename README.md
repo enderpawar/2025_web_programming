@@ -5,7 +5,7 @@
 
 ## 📸 주요 화면
 
-### Landing Page
+### 1) Landing Page
 <img width="3839" height="1984" alt="image" src="https://github.com/user-attachments/assets/cfaafb49-48fc-44ed-955a-5371fe508362" />
 
 - 플랫폼 소개 및 사용 가이드를 제공하는 메인 페이지입니다.
@@ -34,7 +34,7 @@
    -우측 Profile 모달에서 GEMINI API키를 설정할 수 있습니다.
 </details>
 
-### Rooms Page 
+### 2) Rooms Page 
 <img width="2023" height="1208" alt="image" src="https://github.com/user-attachments/assets/cf96bf77-33ea-4e20-8216-6aa7a9bc7b88" />
 
 - 생성된 학습 방 목록과 학생 진행 상황, 문제 목록을 한눈에 볼 수 있는 페이지입니다.
@@ -64,7 +64,7 @@
    - Monaco Editor를 통한 구문 강조 표시로 가독성이 높습니다.
 </details>
 
-### Problems Page
+### 3) Problems Page
 <img width="3395" height="1830" alt="image" src="https://github.com/user-attachments/assets/ae9d7f78-3a0b-498f-bc24-cfacc17ec0b2" />
 
 - 방에 포함된 문제 목록을 보여주는 페이지입니다.
@@ -92,7 +92,7 @@
    - 완료한 문제에는 "✓ COMPLETE!" 배지가 표시됩니다.
 </details>
 
-### Editor Page
+### 4) Editor Page
 <img width="3839" height="1966" alt="image" src="https://github.com/user-attachments/assets/aef05327-4fb2-45f0-9c24-85830411f7d2" />
 
 - 실시간 코드 편집과 테스트를 수행할 수 있는 페이지입니다.
